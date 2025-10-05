@@ -21,7 +21,7 @@
     *{box-sizing:border-box}
     body{
       margin:0; background:var(--bg); color:var(--text);
-      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, Helvetica Neue, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, Helvetica Neue, Arial;
       display:flex; min-height:100svh; align-items:center; justify-content:center; padding:24px;
     }
     .card{
@@ -33,61 +33,34 @@
       padding:26px 26px 18px 26px;
       position:relative;
     }
-    header{
-      display:flex; align-items:center; justify-content:center; margin-bottom:6px;
-    }
-    header img.logo{height:40px; width:auto; object-fit:contain}
+    header{display:flex; align-items:center; justify-content:center; margin-bottom:6px;}
+    header img.logo{height:64px; width:auto; object-fit:contain}
     .row{display:grid; grid-template-columns: 1fr 1.3fr; gap:14px; align-items:center; margin:14px 0;}
     label{font-size:20px; font-weight:600}
-    .control{
-      display:flex; align-items:center; background:#fff; border:3px solid var(--outline);
-      border-radius:14px; padding:8px 12px; height:46px; position:relative;
-    }
+    .control{ display:flex; align-items:center; background:#fff; border:3px solid var(--outline);
+      border-radius:14px; padding:8px 12px; height:46px; position:relative;}
     select, input[type="number"], input[type="text"]{
       width:100%; height:100%; border:none; outline:none; font-size:18px; background:transparent;
       -webkit-appearance:none; appearance:none;
     }
-    .select-wrap::after{
-      content:"▾"; position:absolute; right:12px; font-size:22px; pointer-events:none;
-    }
+    .select-wrap::after{ content:"▾"; position:absolute; right:12px; font-size:22px; pointer-events:none; }
     .filebar{ display:flex; gap:10px; justify-content:center; margin-top:6px; margin-bottom:10px;}
     .filebar .hidden-input{ display:none; }
-    .btn{
-      border:3px solid var(--outline);
-      background:#fff; padding:8px 12px; border-radius:14px; font-weight:700; font-size:16px;
-      cursor:pointer; transition: transform .04s ease;
-    }
+    .btn{ border:3px solid var(--outline); background:#fff; padding:8px 12px; border-radius:14px; font-weight:700; font-size:16px; cursor:pointer; transition: transform .04s ease; }
     .btn:active{ transform: translateY(1px); }
     .file-name{ font-size:14px; color:var(--muted); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; max-width:60%; align-self:center;}
-    .summary{
-      margin-top:6px; margin-bottom:8px;
-      color:var(--muted);
-      font-size:14px; text-align:center;
-    }
-    .grid-stats{
-      display:grid; grid-template-columns: 1fr 1fr; gap:8px 16px;
-      font-size:15px; margin:14px 0;
-    }
-    .grid-stats .key{color:var(--muted);}
-    .grid-stats .val{ text-align:right; font-weight:700; }
-    .divider{ height:1px; background:#e5e7eb; margin:8px 0 12px; }
-    .cuota{
-      text-align:center; margin-top:8px; margin-bottom:4px;
-    }
+    .summary{ margin-top:6px; margin-bottom:8px; color:var(--muted); font-size:14px; text-align:center; }
+    .grid-stats{ display:grid; grid-template-columns: 1fr 1fr; gap:8px 16px; font-size:15px; margin:14px 0; }
+    .grid-stats .key{color:var(--muted);} .grid-stats .val{ text-align:right; font-weight:700; }
+    .cuota{ text-align:center; margin-top:8px; margin-bottom:4px; }
     .cuota .big{ font-size:28px; font-weight:800; color:#dc2626; }
-    footer{ text-align:center; font-size:12px; color:var(--muted); margin-top:6px;}
-    .muted{ color:var(--muted) }
-    .inline{ display:inline-flex; align-items:center; gap:8px; }
-    .readonly{ color:#111827; opacity:.9 }
     .hint{ font-size:12px; color:var(--muted); margin-top:-6px; margin-bottom:6px; text-align:center;}
-    .brand{position:absolute; inset:14px 14px auto auto; font-weight:900; opacity:.0;} /* reserved */
+    footer{ text-align:center; font-size:12px; color:var(--muted); margin-top:6px;}
   </style>
 </head>
 <body>
   <main class="card" role="region" aria-label="Simulador de financiación PLANmy">
-    <header>
-      <img class="logo" src="assets/logo.png" alt="PLANmy"/>
-    </header>
+    <header><img class="logo" src="assets/logo.png" alt="PLANmy"/></header>
 
     <div class="filebar" aria-label="Datos">
       <label class="btn" for="csvInput">Cargar datos (CSV)</label>
@@ -95,7 +68,7 @@
       <button id="clearBtn" class="btn" type="button">Borrar datos</button>
       <span id="fileName" class="file-name" aria-live="polite"></span>
     </div>
-    <p class="summary">El CSV debe incluir columnas: <b>Familia</b>, <b>Producto</b>, <b>Residual%</b>, <b>Meses</b> (24|36), <b>TIN%</b> y opcional <b>Gastos</b>.</p>
+    <p class="summary">CSV: <b>Familia</b>, <b>Producto</b>, <b>Residual%</b>/<b>ResidualPct</b>, <b>Meses</b> (24|36), <b>TIN%</b>, <b>Gastos</b> (opcional).</p>
 
     <div class="row">
       <label for="familySel">Familia</label>
@@ -109,12 +82,12 @@
 
     <div class="row">
       <label for="basePrice">Precio</label>
-      <div class="control"><input id="basePrice" type="number" inputmode="decimal" step="0.01" placeholder="Precio base para calcular residual" disabled/></div>
+      <div class="control"><input id="basePrice" type="number" inputmode="decimal" step="0.01" placeholder="Base para calcular residual" disabled/></div>
     </div>
 
     <div class="row">
       <label for="offerPrice">Oferta</label>
-      <div class="control"><input id="offerPrice" type="number" inputmode="decimal" step="0.01" placeholder="Precio para calcular cuotas" disabled/></div>
+      <div class="control"><input id="offerPrice" type="number" inputmode="decimal" step="0.01" placeholder="Base para calcular cuotas" disabled/></div>
     </div>
 
     <div class="row">
@@ -123,7 +96,7 @@
     </div>
 
     <div class="grid-stats muted" id="preStats" style="display:none">
-      <div class="key">Gastos</div>           <div class="val" id="gastosVal">0,00 €</div>
+      <div class="key">Gastos</div>           <div class="val" id="gastosVal">0,00 €</div>
       <div class="key">Valor Residual</div>   <div class="val" id="residualVal">—</div>
       <div class="key">TIN</div>              <div class="val" id="tinVal">—</div>
       <div class="key">Plazos</div>           <div class="val" id="plazosVal">—</div>
@@ -144,246 +117,170 @@
       <div class="key">Precio Total a Plazos</div>  <div class="val" id="precioPlazos">—</div>
     </div>
 
-    <div class="hint">Instálala como app desde el navegador (PWA) para usarla sin conexión.</div>
+    <div class="hint">Instala como app (PWA) desde el navegador.</div>
     <footer>© PLANmy</footer>
   </main>
 
 <script>
-// --- Utilities ---
 const $ = sel => document.querySelector(sel);
 const nfEUR = new Intl.NumberFormat('es-ES', {style:'currency', currency:'EUR'});
 const nfPCT = new Intl.NumberFormat('es-ES', {style:'percent', minimumFractionDigits:2, maximumFractionDigits:2});
-const nfDEC = new Intl.NumberFormat('es-ES', {minimumFractionDigits:2, maximumFractionDigits:2});
 
 function normalizeKey(k){
   return k.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9%]/g,'').trim();
 }
-
-function detectDelimiter(headerLine) {
-  // handle common CSV delimiters (semicolon in ES, comma, or tab)
-  const counts = {',': (headerLine.match(/,/g)||[]).length, ';': (headerLine.match(/;/g)||[]).length, '\t': (headerLine.match(/\t/g)||[]).length};
-  let best = ';'; let max = -1;
-  for (const [d,c] of Object.entries(counts)){ if (c > max){ max=c; best = d==='\t'?'\t':d;} }
-  return best === '\t' ? '\t' : best;
+function detectDelimiter(headerLine){
+  const counts = {',':(headerLine.match(/,/g)||[]).length, ';':(headerLine.match(/;/g)||[]).length, '\t':(headerLine.match(/\t/g)||[]).length};
+  let max=-1, best=';'; for (const [d,c] of Object.entries(counts)){ if(c>max){max=c; best=(d==='\t'?'\t':d);} }
+  return best==='\t'?'\t':best;
 }
-
-// Minimal CSV parser with quote support
 function parseCSV(text){
-  // Normalize line endings
-  text = text.replace(/\r\n/g, "\n").replace(/\r/g,"\n");
-  const firstLine = text.split("\n")[0];
-  const delim = detectDelimiter(firstLine);
-  const rows = [];
-  let i = 0, field = '', row = [], inQuotes = false;
-  while (i < text.length){
-    const c = text[i];
-    if (inQuotes){
-      if (c === '"'){
-        if (text[i+1] === '"'){ field+='"'; i++; }
-        else { inQuotes = false; }
-      } else { field += c; }
-    } else {
-      if (c === '"'){ inQuotes = true; }
-      else if (c === delim){ row.push(field); field=''; }
-      else if (c === "\n"){ row.push(field); rows.push(row.map(v=>v.trim())); row=[]; field=''; }
-      else { field += c; }
-    }
-    i++;
+  text = text.replace(/\r\n/g,'\n').replace(/\r/g,'\n');
+  const first = text.split('\n')[0]; const delim = detectDelimiter(first);
+  const rows=[]; let i=0, field='', row=[], inQ=false;
+  while(i<text.length){
+    const c=text[i];
+    if(inQ){ if(c=='"'){ if(text[i+1]=='"'){field+='"'; i++;} else {inQ=false;} } else {field+=c;} }
+    else{
+      if(c=='"'){ inQ=true; }
+      else if(c==delim){ row.push(field); field=''; }
+      else if(c=='\n'){ row.push(field); rows.push(row.map(v=>v.trim())); row=[]; field=''; }
+      else { field+=c; }
+    } i++;
   }
-  if (field.length || row.length){ row.push(field); rows.push(row.map(v=>v.trim())); }
-  // remove empty rows
+  if(field.length || row.length){ row.push(field); rows.push(row.map(v=>v.trim())); }
   return rows.filter(r => r.join('').length);
 }
-
 function toNumber(val){
   if (typeof val === 'number') return val;
   if (!val) return 0;
-  // replace % and thousand separators
-  let v = (''+val).replace(/%/g,'').replace(/\s/g,'');
-  // handle ES decimals (comma) and thousands (dot) or viceversa
-  // If there are two different separators, guess decimal as last non-digit
+  let v=(''+val).replace(/%/g,'').replace(/\s/g,'');
   if (v.includes(',') && v.includes('.')){
-    if (v.lastIndexOf(',') > v.lastIndexOf('.')){
-      v = v.replace(/\./g,'').replace(',','.');
-    } else {
-      v = v.replace(/,/g,'');
-    }
-  } else if (v.includes(',')){
-    v = v.replace(/\./g,'').replace(',','.');
-  }
-  const n = parseFloat(v);
-  return isNaN(n) ? 0 : n;
+    if (v.lastIndexOf(',')>v.lastIndexOf('.')){ v=v.replace(/\./g,'').replace(',','.'); }
+    else { v=v.replace(/,/g,''); }
+  } else if (v.includes(',')){ v=v.replace(/\./g,'').replace(',','.'); }
+  const n=parseFloat(v); return isNaN(n)?0:n;
 }
+function parseMonths(m){ if(!m) return []; const L=(''+m).split(/\||\,|\s|\//g).map(s=>parseInt(s,10)).filter(n=>!isNaN(n)); return [...new Set(L)].sort((a,b)=>a-b); }
 
-function parseMonths(mstr){
-  if (!mstr) return [];
-  const parts = (''+mstr).split(/\||\,|\s|\//g).map(s => parseInt(s,10)).filter(n=>!isNaN(n));
-  const uniq = [...new Set(parts)];
-  return uniq.sort((a,b)=>a-b);
-}
+let DATA=[], INDEX={byFamily:{}}, selected={family:null, product:null, item:null, months:null};
 
-// --- State ---
-let DATA = []; // list of rows
-let INDEX = { byFamily: {} };
-let selected = { family: null, product: null, item: null, months: null };
-
-// Expected headers map
 const HEADER_MAP = {
-  'familia':'familia', 'tipo':'familia', 'tipodeproducto':'familia',
+  'familia':'familia', 'tipo':'familia',
   'producto':'producto', 'modelo':'producto',
-  'residual':'residual', 'residual%':'residual', 'porcentajeresidual':'residual', 'porcentajeresidual%':'residual',
-  'meses':'meses', 'plazos':'meses', 'opcionesmeses':'meses',
-  'tin':'tin', 'tin%':'tin', 'interes':'tin', 'interes%':'tin',
-  'gastos':'gastos', 'comisiones':'gastos'
+  'residual':'residual', 'residual%':'residual', 'residualpct':'residual',
+  'meses':'meses', 'plazos':'meses',
+  'tin':'tin','tin%':'tin','interes':'tin','interes%':'tin',
+  'gastos':'gastos','comisiones':'gastos'
 };
 
 function buildIndex(){
-  INDEX = { byFamily: {} };
-  for (const row of DATA){
-    const fam = row.familia || 'General';
-    if (!INDEX.byFamily[fam]) INDEX.byFamily[fam] = [];
-    INDEX.byFamily[fam].push(row);
-  }
-  // populate family select
-  const famSel = $('#familySel');
-  famSel.innerHTML = '<option value="">—</option>' + Object.keys(INDEX.byFamily).sort().map(f => `<option>${f}</option>`).join('');
-  famSel.disabled = false;
-  $('#productSel').innerHTML = '<option value="">—</option>';
-  $('#productSel').disabled = true;
-  $('#monthsSel').innerHTML = '<option value="">—</option>';
-  $('#monthsSel').disabled = true;
-  $('#basePrice').disabled = true;
-  $('#offerPrice').disabled = true;
-  selected = { family:null, product:null, item:null, months:null };
-  showStats(null);
+  INDEX={byFamily:{}};
+  for (const r of DATA){ const f=r.familia||'General'; (INDEX.byFamily[f]||(INDEX.byFamily[f]=[])).push(r); }
+  const famSel=$('#familySel');
+  famSel.innerHTML='<option value="">—</option>'+Object.keys(INDEX.byFamily).sort().map(f=>`<option>${f}</option>`).join('');
+  famSel.disabled=false;
+  $('#productSel').innerHTML='<option value="">—</option>'; $('#productSel').disabled=true;
+  $('#monthsSel').innerHTML='<option value="">—</option>'; $('#monthsSel').disabled=true;
+  $('#basePrice').disabled=true; $('#offerPrice').disabled=true;
+  selected={family:null, product:null, item:null, months:null}; showStats(null);
 }
 
 function parseDataFromCSV(text){
-  const rows = parseCSV(text);
-  if (!rows.length) throw new Error('CSV vacío o no reconocido');
-  const header = rows[0].map(h => HEADER_MAP[normalizeKey(h)] || normalizeKey(h));
-  const data = [];
-  for (let i=1; i<rows.length; i++){
-    const obj = {};
-    rows[i].forEach((cell, idx) => {
-      const key = header[idx];
-      if (!key) return;
-      obj[key] = cell;
-    });
-    // normalize fields
-    obj.familia = obj.familia || 'General';
-    obj.producto = obj.producto || '';
-    obj.residual = toNumber(obj.residual);
-    obj.tin = toNumber(obj.tin);
-    obj.gastos = toNumber(obj.gastos);
-    obj.meses = parseMonths(obj.meses);
-    if (obj.producto) data.push(obj);
+  const rows=parseCSV(text); if(!rows.length) throw new Error('CSV vacío');
+  const header=rows[0].map(h=>HEADER_MAP[normalizeKey(h)] || normalizeKey(h));
+  const data=[];
+  for(let i=1;i<rows.length;i++){
+    const obj={}; rows[i].forEach((cell, idx)=>{ const key=header[idx]; if(!key) return; obj[key]=cell; });
+    obj.familia=obj.familia||'General'; obj.producto=obj.producto||'';
+    obj.residual=toNumber(obj.residual); obj.tin=toNumber(obj.tin); obj.gastos=toNumber(obj.gastos); obj.meses=parseMonths(obj.meses);
+    if(obj.producto) data.push(obj);
   }
-  if (!data.length) throw new Error('No se encontraron filas válidas (columna Producto obligatoria).');
-  DATA = data;
-  buildIndex();
+  if(!data.length) throw new Error('No hay filas válidas (Producto obligatorio)');
+  DATA=data; buildIndex();
 }
 
-$('#csvInput').addEventListener('change', async (e) => {
-  const file = e.target.files[0];
-  if (!file) return;
-  $('#fileName').textContent = file.name;
-  const text = await file.text();
-  try{
-    parseDataFromCSV(text);
-  }catch(err){
-    alert('Error al leer el CSV: ' + err.message);
-  }
+$('#csvInput').addEventListener('change', async (e)=>{
+  const file=e.target.files[0]; if(!file) return; $('#fileName').textContent=file.name;
+  const text=await file.text(); try{ parseDataFromCSV(text); }catch(err){ alert('Error CSV: '+err.message); }
 });
 
-$('#clearBtn').addEventListener('click', () => {
-  DATA = []; INDEX = {byFamily:{}};
-  $('#fileName').textContent = '';
-  $('#familySel').innerHTML = '<option value="">—</option>'; $('#familySel').disabled = true;
-  $('#productSel').innerHTML = '<option value="">—</option>'; $('#productSel').disabled = true;
-  $('#monthsSel').innerHTML = '<option value="">—</option>'; $('#monthsSel').disabled = true;
+$('#clearBtn').addEventListener('click', ()=>{
+  DATA=[]; INDEX={byFamily:{}}; $('#fileName').textContent='';
+  ['#familySel','#productSel','#monthsSel'].forEach(sel=>{ $(sel).innerHTML='<option value="">—</option>'; $(sel).disabled=true; });
   $('#basePrice').value=''; $('#offerPrice').value=''; $('#basePrice').disabled=true; $('#offerPrice').disabled=true;
   showStats(null);
 });
 
-$('#familySel').addEventListener('change', (e) => {
-  selected.family = e.target.value || null;
-  const list = selected.family ? (INDEX.byFamily[selected.family]||[]) : [];
-  const prodSel = $('#productSel');
-  prodSel.innerHTML = '<option value="">—</option>' + list.map(r => `<option>${r.producto}</option>`).join('');
-  prodSel.disabled = !list.length;
-  $('#monthsSel').innerHTML = '<option value="">—</option>'; $('#monthsSel').disabled = true;
-  $('#basePrice').disabled = true; $('#offerPrice').disabled = true;
+$('#familySel').addEventListener('change',(e)=>{
+  selected.family=e.target.value||null;
+  const list=selected.family?(INDEX.byFamily[selected.family]||[]):[];
+  const prodSel=$('#productSel');
+  prodSel.innerHTML='<option value="">—</option>'+list.map(r=>`<option>${r.producto}</option>`).join('');
+  prodSel.disabled=!list.length;
+  $('#monthsSel').innerHTML='<option value="">—</option>'; $('#monthsSel').disabled=true;
+  $('#basePrice').disabled=true; $('#offerPrice').disabled=true;
   showStats(null);
 });
 
-$('#productSel').addEventListener('change', (e) => {
-  selected.product = e.target.value || null;
-  const list = selected.family ? (INDEX.byFamily[selected.family]||[]) : [];
-  const item = list.find(r => r.producto === selected.product) || null;
-  selected.item = item;
-  if (!item){ showStats(null); return; }
-  // Months
-  const monthsSel = $('#monthsSel');
-  if (item.meses && item.meses.length){
-    monthsSel.innerHTML = '<option value="">—</option>' + item.meses.map(m=>`<option value="${m}">${m}</option>`).join('');
-    monthsSel.disabled = false;
-    if (item.meses.length === 1){
-      monthsSel.value = String(item.meses[0]);
-      selected.months = item.meses[0];
-    } else { selected.months = null; }
+$('#productSel').addEventListener('change',(e)=>{
+  selected.product=e.target.value||null;
+  const list=selected.family?(INDEX.byFamily[selected.family]||[]):[];
+  selected.item=list.find(r=>r.producto===selected.product)||null;
+  const item=selected.item; if(!item){ showStats(null); return; }
+
+  const monthsSel=$('#monthsSel');
+  if(item.meses && item.meses.length){
+    monthsSel.innerHTML='<option value="">—</option>'+item.meses.map(m=>`<option value="${m}">${m}</option>`).join('');
+    monthsSel.disabled=false;
+    if(item.meses.length===1){ monthsSel.value=String(item.meses[0]); selected.months=item.meses[0]; }
+    else { selected.months=null; }
   } else {
-    monthsSel.innerHTML = '<option value="24">24</option><option value="36">36</option>';
-    monthsSel.disabled = false;
+    monthsSel.innerHTML='<option value="24">24</option><option value="36">36</option>'; monthsSel.disabled=false;
   }
-  // Enable prices
-  $('#basePrice').disabled = false; $('#offerPrice').disabled = false;
-  showStats(item);
-  calculate();
+  $('#basePrice').disabled=false; $('#offerPrice').disabled=false;
+  showStats(item); calculate();
 });
 
-$('#monthsSel').addEventListener('change', (e)=>{
-  const v = parseInt(e.target.value, 10);
-  selected.months = isNaN(v) ? null : v;
-  calculate();
-});
-
-['#basePrice','#offerPrice'].forEach(sel => {
-  $(sel).addEventListener('input', calculate);
-});
+$('#monthsSel').addEventListener('change',(e)=>{ const v=parseInt(e.target.value,10); selected.months=isNaN(v)?null:v; calculate(); });
+['#basePrice','#offerPrice'].forEach(sel=>$(sel).addEventListener('input', calculate));
 
 function showStats(item){
-  const pre = $('#preStats');
-  if (!item){ pre.style.display='none'; return; }
+  const pre=$('#preStats'); if(!item){ pre.style.display='none'; return; }
   pre.style.display='grid';
-  $('#gastosVal').textContent = nfEUR.format(item.gastos || 0);
-  $('#tinVal').textContent = nfPCT.format((item.tin||0)/100);
-  $('#plazosVal').textContent = selected.months ? String(selected.months) : '—';
-  const i = (item.tin||0)/100/12;
-  const tae = Math.pow(1+i,12) - 1;
-  $('#taeVal').textContent = nfPCT.format(tae);
+  $('#gastosVal').textContent=nfEUR.format(item.gastos||0);
+  $('#tinVal').textContent=new Intl.NumberFormat('es-ES',{style:'percent',minimumFractionDigits:2,maximumFractionDigits:2}).format((item.tin||0)/100);
+  $('#plazosVal').textContent=selected.months?String(selected.months):'—';
+  const i=(item.tin||0)/100/12; const tae=Math.pow(1+i,12)-1; $('#taeVal').textContent=new Intl.NumberFormat('es-ES',{style:'percent',minimumFractionDigits:2,maximumFractionDigits:2}).format(tae);
 }
 
 function calculate(){
-  const item = selected.item;
-  if (!item) return;
-  const base = toNumber($('#basePrice').value);
-  const offer = toNumber($('#offerPrice').value);
-  const N = selected.months || 0;
-  const i = (item.tin||0)/100/12;
-  const gastos = item.gastos || 0;
-  if (!base || !offer || !N || i < 0) {
-    $('#cuotaMensual').textContent = '—';
+  const item=selected.item; if(!item) return;
+  const base=parseFloat($('#basePrice').value.replace(',','.'));
+  const offer=parseFloat($('#offerPrice').value.replace(',','.'));
+  const N=selected.months||0;
+  const i=(item.tin||0)/100/12;
+  const gastos=item.gastos||0;
+
+  if (!base || !offer || !N || i < 0){
+    $('#cuotaMensual').textContent='—';
     ['#ultimaCuota','#intereses','#costeTotal','#importeCredito','#adeudado','#precioPlazos'].forEach(sel=>$(sel).textContent='—');
-    $('#plazosVal').textContent = N? String(N) : '—';
-    $('#residualVal').textContent = base? nfEUR.format(base * (item.residual||0)/100): '—';
+    $('#plazosVal').textContent=N?String(N):'—';
+    $('#residualVal').textContent=base? nfEUR.format(base*(item.residual||0)/100) : '—';
     return;
   }
-  const RV = base * (item.residual||0)/100; // residual value (balloon)
+
+  // Valor Residual (última cuota): porcentaje del precio base
+  const RV = base * (item.residual||0)/100;
+
+  // Nuevo criterio: restar RV de Oferta y calcular las cuotas sobre ese principal
+  const principal = Math.max(offer - RV, 0);
   const denom = (1 - Math.pow(1+i, -N));
-  const cuota = denom === 0 ? offer / N : ((offer - RV/Math.pow(1+i,N)) * i) / denom;
+  const cuota = denom === 0 ? (principal / N) : (principal * i) / denom;
+
   const totalPagos = cuota * N + RV + (gastos||0);
   const intereses = totalPagos - offer;
+
   $('#residualVal').textContent = nfEUR.format(RV);
   $('#cuotaMensual').textContent = nfEUR.format(cuota);
   $('#ultimaCuota').textContent = nfEUR.format(RV);
@@ -395,11 +292,9 @@ function calculate(){
   $('#plazosVal').textContent = String(N);
 }
 
-// PWA: register service worker
-if ('serviceWorker' in navigator) {
-  window.addEventListener('load', () => {
-    navigator.serviceWorker.register('./sw.js').catch(()=>{});
-  });
+// PWA
+if ('serviceWorker' in navigator){
+  window.addEventListener('load', ()=>{ navigator.serviceWorker.register('./sw.js').catch(()=>{}); });
 }
 </script>
 </body>
