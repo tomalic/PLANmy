@@ -254,13 +254,14 @@ function showStats(item){
   const i=(item.tin||0)/100/12; const tae=Math.pow(1+i,12)-1; $('#taeVal').textContent=new Intl.NumberFormat('es-ES',{style:'percent',minimumFractionDigits:2,maximumFractionDigits:2}).format(tae);
 }
 
+
 function calculate(){
-  const item=selected.item; if(!item) return;
-  const base=parseFloat($('#basePrice').value.replace(',','.'));
-  const offer=parseFloat($('#offerPrice').value.replace(',','.'));
-  const N=selected.months||0;
-  const i=(item.tin||0)/100/12;
-  const gastos=item.gastos||0;
+  const item = selected.item; if(!item) return;
+  const base = parseFloat($('#basePrice').value.replace(',','.'));
+  const offer = parseFloat($('#offerPrice').value.replace(',','.'));
+  const N = selected.months || 0;
+  const i = (item.tin||0)/100/12;
+  const gastos = item.gastos || 0;
 
   if (!base || !offer || !N || i < 0){
     $('#cuotaMensual').textContent='—';
@@ -269,6 +270,29 @@ function calculate(){
     $('#residualVal').textContent=base? nfEUR.format(base*(item.residual||0)/100) : '—';
     return;
   }
+
+  // Valor Residual (última cuota): porcentaje del precio base, redondeado a céntimo antes del cálculo
+  let RV = base * (item.residual||0)/100;
+  RV = Math.round(RV * 100) / 100;
+
+  // Fórmula de préstamo con pago final (balloon): cuota sobre PV=Oferta con FV=RV
+  const denom = (1 - Math.pow(1+i, -N));
+  const cuota = denom === 0 ? ((offer - RV) / N) : ((offer - RV/Math.pow(1+i,N)) * i) / denom;
+
+  const totalPagos = cuota * N + RV + (gastos||0);
+  const intereses = totalPagos - offer;
+
+  $('#residualVal').textContent = nfEUR.format(RV);
+  $('#cuotaMensual').textContent = nfEUR.format(cuota);
+  $('#ultimaCuota').textContent = nfEUR.format(RV);
+  $('#intereses').textContent = nfEUR.format(intereses);
+  $('#costeTotal').textContent = nfEUR.format(intereses);
+  $('#importeCredito').textContent = nfEUR.format(offer);
+  $('#adeudado').textContent = nfEUR.format(totalPagos);
+  $('#precioPlazos').textContent = nfEUR.format(totalPagos);
+  $('#plazosVal').textContent = String(N);
+}
+
 
   // Valor Residual (última cuota): porcentaje del precio base
   const RV = base * (item.residual||0)/100;
