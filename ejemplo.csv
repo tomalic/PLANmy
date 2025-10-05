@@ -1,2 +1,10 @@
-Familia;Producto;ResidualPct;Meses;TIN%;Gastos
-iPhone;iPhone 16;23;24|36;10.4;0
+Tipo;Producto;Meses;ResidualPct;TIN
+IPHONE;Iphone 16;24;23;10,4
+IPHONE;Iphone 16;36;16,5;11,18
+IPHONE;Iphone 15;24;16,5;10,4
+IPHONE;Iphone 15;36;8,2;0,1118
+APPLE WATCH;Watch Ultra 2;24;16,5;10,4
+APPLE WATCH;Watch Series 10;24;20,5;10,4
+APPLE WATCH;Watch SE;24;8,15;10,4
+MAC;Mac 2024;36;24,7;11,18
+IPAD;Ipad Pro 2024;36;16,5;11,18

@@ -6,69 +6,44 @@
   <title>PLANmy · Simulador</title>
   <link rel="manifest" href="manifest.webmanifest">
   <link rel="icon" href="assets/icon-192.png" sizes="192x192">
-  <link rel="apple-touch-icon" href="assets/icon-192.png">
   <meta name="theme-color" content="#16a34a">
   <style>
-    :root{
-      --bg:#f7f7f7;
-      --card:#ffffff;
-      --text:#111827;
-      --muted:#6b7280;
-      --accent:#16a34a;
-      --outline:#111827;
-      --radius:22px;
-    }
+    :root{ --bg:#f7f7f7; --card:#ffffff; --text:#111827; --muted:#6b7280; --outline:#111827; --radius:22px; }
     *{box-sizing:border-box}
-    body{
-      margin:0; background:var(--bg); color:var(--text);
-      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, Helvetica Neue, Arial;
-      display:flex; min-height:100svh; align-items:center; justify-content:center; padding:24px;
-    }
-    .card{
-      width:min(92vw, 520px);
-      background:var(--card);
-      border:3px solid var(--outline);
-      border-radius: var(--radius);
-      box-shadow: 0 10px 24px rgba(0,0,0,.08);
-      padding:26px 26px 18px 26px;
-      position:relative;
-    }
-    header{display:flex; align-items:center; justify-content:center; margin-bottom:6px;}
-    header img.logo{height:64px; width:auto; object-fit:contain}
-    .row{display:grid; grid-template-columns: 1fr 1.3fr; gap:14px; align-items:center; margin:14px 0;}
-    label{font-size:20px; font-weight:600}
-    .control{ display:flex; align-items:center; background:#fff; border:3px solid var(--outline);
-      border-radius:14px; padding:8px 12px; height:46px; position:relative;}
-    select, input[type="number"], input[type="text"]{
-      width:100%; height:100%; border:none; outline:none; font-size:18px; background:transparent;
-      -webkit-appearance:none; appearance:none;
-    }
+    body{ margin:0; background:var(--bg); color:var(--text); font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, Arial;
+          display:flex; min-height:100svh; align-items:center; justify-content:center; padding:20px;}
+    .card{ width:min(94vw, 560px); background:var(--card); border:3px solid var(--outline); border-radius:var(--radius);
+           box-shadow:0 10px 24px rgba(0,0,0,.08); padding:16px 18px 18px 18px; position:relative; }
+    header{ margin:0 0 6px 0; }
+    header img.logo{ width:100%; height:auto; display:block; object-fit:contain; }
+    .filebar{ display:flex; gap:10px; justify-content:center; margin-top:8px; margin-bottom:12px;}
+    .filebar .hidden-input{ display:none }
+    .btn{ border:3px solid var(--outline); background:#fff; padding:8px 12px; border-radius:14px; font-weight:700; font-size:16px; cursor:pointer }
+    .file-name{ font-size:13px; color:var(--muted); align-self:center; max-width:50%; overflow:hidden; text-overflow:ellipsis; white-space:nowrap }
+    .summary{ margin:-2px 0 6px; color:var(--muted); font-size:13px; text-align:center }
+    .row{ display:grid; grid-template-columns: 1fr 1.3fr; gap:14px; align-items:center; margin:12px 0; }
+    label{ font-size:20px; font-weight:600 }
+    .control{ display:flex; align-items:center; background:#fff; border:3px solid var(--outline); border-radius:14px; padding:8px 12px; height:46px; position:relative;}
+    select, input[type="number"], input[type="text"]{ width:100%; height:100%; border:none; outline:none; font-size:18px; background:transparent; -webkit-appearance:none; appearance:none; }
     .select-wrap::after{ content:"▾"; position:absolute; right:12px; font-size:22px; pointer-events:none; }
-    .filebar{ display:flex; gap:10px; justify-content:center; margin-top:6px; margin-bottom:10px;}
-    .filebar .hidden-input{ display:none; }
-    .btn{ border:3px solid var(--outline); background:#fff; padding:8px 12px; border-radius:14px; font-weight:700; font-size:16px; cursor:pointer; transition: transform .04s ease; }
-    .btn:active{ transform: translateY(1px); }
-    .file-name{ font-size:14px; color:var(--muted); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; max-width:60%; align-self:center;}
-    .summary{ margin-top:6px; margin-bottom:8px; color:var(--muted); font-size:14px; text-align:center; }
-    .grid-stats{ display:grid; grid-template-columns: 1fr 1fr; gap:8px 16px; font-size:15px; margin:14px 0; }
-    .grid-stats .key{color:var(--muted);} .grid-stats .val{ text-align:right; font-weight:700; }
-    .cuota{ text-align:center; margin-top:8px; margin-bottom:4px; }
-    .cuota .big{ font-size:28px; font-weight:800; color:#dc2626; }
-    .hint{ font-size:12px; color:var(--muted); margin-top:-6px; margin-bottom:6px; text-align:center;}
-    footer{ text-align:center; font-size:12px; color:var(--muted); margin-top:6px;}
+    .grid-stats{ display:grid; grid-template-columns: 1fr 1fr; gap:8px 16px; font-size:15px; margin:10px 0; }
+    .grid-stats .key{ color:var(--muted) } .grid-stats .val{ text-align:right; font-weight:700 }
+    .cuota{ text-align:center; margin:8px 0 6px } .cuota .big{ font-size:30px; font-weight:800; color:#dc2626 }
+    .hint{ font-size:12px; color:var(--muted); text-align:center }
+    footer{ text-align:center; font-size:12px; color:var(--muted); margin-top:4px }
   </style>
 </head>
 <body>
-  <main class="card" role="region" aria-label="Simulador de financiación PLANmy">
+  <main class="card" aria-label="Simulador de financiación PLANmy">
     <header><img class="logo" src="assets/logo.png" alt="PLANmy"/></header>
 
-    <div class="filebar" aria-label="Datos">
+    <div class="filebar">
       <label class="btn" for="csvInput">Cargar datos (CSV)</label>
       <input id="csvInput" class="hidden-input" type="file" accept=".csv,text/csv" />
       <button id="clearBtn" class="btn" type="button">Borrar datos</button>
       <span id="fileName" class="file-name" aria-live="polite"></span>
     </div>
-    <p class="summary">CSV: <b>Familia</b>, <b>Producto</b>, <b>Residual%</b>/<b>ResidualPct</b>, <b>Meses</b> (24|36), <b>TIN%</b>, <b>Gastos</b> (opcional).</p>
+    <p class="summary">CSV: <b>Familia/Tipo</b>, <b>Producto</b>, <b>Meses</b>, <b>ResidualPct</b>, <b>TIN</b> y opcional <b>Gastos</b>.</p>
 
     <div class="row">
       <label for="familySel">Familia</label>
@@ -82,12 +57,12 @@
 
     <div class="row">
       <label for="basePrice">Precio</label>
-      <div class="control"><input id="basePrice" type="number" inputmode="decimal" step="0.01" placeholder="Base para calcular residual" disabled/></div>
+      <div class="control"><input id="basePrice" type="number" inputmode="decimal" step="0.01" placeholder="Base para residual" disabled/></div>
     </div>
 
     <div class="row">
       <label for="offerPrice">Oferta</label>
-      <div class="control"><input id="offerPrice" type="number" inputmode="decimal" step="0.01" placeholder="Base para calcular cuotas" disabled/></div>
+      <div class="control"><input id="offerPrice" type="number" inputmode="decimal" step="0.01" placeholder="Base para cuotas" disabled/></div>
     </div>
 
     <div class="row">
@@ -103,10 +78,7 @@
       <div class="key">TAE</div>              <div class="val" id="taeVal">—</div>
     </div>
 
-    <div class="cuota">
-      <div>Cuota Mensual</div>
-      <div class="big" id="cuotaMensual">—</div>
-    </div>
+    <div class="cuota"><div>Cuota Mensual</div><div class="big" id="cuotaMensual">—</div></div>
 
     <div class="grid-stats">
       <div class="key">Última Cuota</div>           <div class="val" id="ultimaCuota">—</div>
@@ -117,73 +89,64 @@
       <div class="key">Precio Total a Plazos</div>  <div class="val" id="precioPlazos">—</div>
     </div>
 
-    <div class="hint">Instala como app (PWA) desde el navegador.</div>
+    <div class="hint">Si no aparecen cambios, forzar recarga: Ctrl/Cmd+Shift+R (caché).</div>
     <footer>© PLANmy</footer>
   </main>
 
 <script>
-const $ = sel => document.querySelector(sel);
-const nfEUR = new Intl.NumberFormat('es-ES', {style:'currency', currency:'EUR'});
-const nfPCT = new Intl.NumberFormat('es-ES', {style:'percent', minimumFractionDigits:2, maximumFractionDigits:2});
-
-function normalizeKey(k){
-  return k.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9%]/g,'').trim();
-}
-function detectDelimiter(headerLine){
-  const counts = {',':(headerLine.match(/,/g)||[]).length, ';':(headerLine.match(/;/g)||[]).length, '\t':(headerLine.match(/\t/g)||[]).length};
-  let max=-1, best=';'; for (const [d,c] of Object.entries(counts)){ if(c>max){max=c; best=(d==='\t'?'\t':d);} }
-  return best==='\t'?'\t':best;
-}
+const $ = s=>document.querySelector(s);
+const nfEUR = new Intl.NumberFormat('es-ES',{style:'currency',currency:'EUR'});
+const nfPCT = new Intl.NumberFormat('es-ES',{style:'percent',minimumFractionDigits:2,maximumFractionDigits:2});
+function normalizeKey(k){ return k.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9%]/g,'').trim(); }
+function detectDelimiter(first){ const counts={',':(first.match(/,/g)||[]).length,';':(first.match(/;/g)||[]).length,'\\t':(first.match(/\\t/g)||[]).length}; let best=';'; let mx=-1; for(const[d,c] of Object.entries(counts)){ if(c>mx){mx=c; best=d==='\\t'?'\\t':d;} } return best==='\\t'?'\\t':best; }
 function parseCSV(text){
-  text = text.replace(/\r\n/g,'\n').replace(/\r/g,'\n');
-  const first = text.split('\n')[0]; const delim = detectDelimiter(first);
-  const rows=[]; let i=0, field='', row=[], inQ=false;
-  while(i<text.length){
-    const c=text[i];
-    if(inQ){ if(c=='"'){ if(text[i+1]=='"'){field+='"'; i++;} else {inQ=false;} } else {field+=c;} }
-    else{
-      if(c=='"'){ inQ=true; }
-      else if(c==delim){ row.push(field); field=''; }
-      else if(c=='\n'){ row.push(field); rows.push(row.map(v=>v.trim())); row=[]; field=''; }
-      else { field+=c; }
-    } i++;
-  }
-  if(field.length || row.length){ row.push(field); rows.push(row.map(v=>v.trim())); }
-  return rows.filter(r => r.join('').length);
+  text=text.replace(/\\r\\n/g,'\\n').replace(/\\r/g,'\\n'); const delim=detectDelimiter(text.split('\\n')[0]); const rows=[]; let i=0,f='',r=[],q=false;
+  while(i<text.length){ const c=text[i]; if(q){ if(c=='"'){ if(text[i+1]=='"'){f+='"'; i++;} else { q=false; } } else { f+=c; } } else { if(c=='"'){ q=true; } else if(c==delim){ r.push(f); f=''; } else if(c=='\\n'){ r.push(f); rows.push(r.map(v=>v.trim())); r=[]; f=''; } else { f+=c; } } i++; }
+  if(f.length || r.length){ r.push(f); rows.push(r.map(v=>v.trim())); }
+  return rows.filter(R=>R.join('').length);
 }
-function toNumber(val){
-  if (typeof val === 'number') return val;
-  if (!val) return 0;
-  let v=(''+val).replace(/%/g,'').replace(/\s/g,'');
-  if (v.includes(',') && v.includes('.')){
-    if (v.lastIndexOf(',')>v.lastIndexOf('.')){ v=v.replace(/\./g,'').replace(',','.'); }
-    else { v=v.replace(/,/g,''); }
-  } else if (v.includes(',')){ v=v.replace(/\./g,'').replace(',','.'); }
-  const n=parseFloat(v); return isNaN(n)?0:n;
+function toNumber(v){
+  if(typeof v==='number') return v; if(!v) return 0;
+  let s=(''+v).replace(/%/g,'').replace(/\\s/g,'');
+  if(s.includes(',') && s.includes('.')){ if(s.lastIndexOf(',')>s.lastIndexOf('.')) s=s.replace(/\\./g,'').replace(',','.'); else s=s.replace(/,/g,''); }
+  else if(s.includes(',')) s=s.replace(/\\./g,'').replace(',','.');
+  const n=parseFloat(s); return isNaN(n)?0:n;
 }
-function parseMonths(m){ if(!m) return []; const L=(''+m).split(/\||\,|\s|\//g).map(s=>parseInt(s,10)).filter(n=>!isNaN(n)); return [...new Set(L)].sort((a,b)=>a-b); }
+function parseMonths(v){ if(v==null) return []; const n=parseInt((''+v).trim(),10); return isNaN(n)?[]:[n]; }
 
-let DATA=[], INDEX={byFamily:{}}, selected={family:null, product:null, item:null, months:null};
+let DB={}; // {Familia:{Producto:{meses:[...], variants:{24:{tin,residual,gastos}}}}}
+let selected={fam:null, prod:null, months:null};
 
-const HEADER_MAP = {
-  'familia':'familia', 'tipo':'familia',
-  'producto':'producto', 'modelo':'producto',
-  'residual':'residual', 'residual%':'residual', 'residualpct':'residual',
-  'meses':'meses', 'plazos':'meses',
+const HEADER_MAP={
+  'familia':'familia','tipo':'familia',
+  'producto':'producto','modelo':'producto',
+  'meses':'meses','plazos':'meses',
+  'residualpct':'residual','residual%':'residual','residual':'residual',
   'tin':'tin','tin%':'tin','interes':'tin','interes%':'tin',
   'gastos':'gastos','comisiones':'gastos'
 };
 
-function buildIndex(){
-  INDEX={byFamily:{}};
-  for (const r of DATA){ const f=r.familia||'General'; (INDEX.byFamily[f]||(INDEX.byFamily[f]=[])).push(r); }
+function buildDB(data){
+  DB={};
+  for(const row of data){
+    const fam=row.familia||'General'; const prod=row.producto||''; if(!prod) continue;
+    if(!DB[fam]) DB[fam]={};
+    if(!DB[fam][prod]) DB[fam][prod]={meses:[], variants:{}};
+    const m = (row.meses && row.meses.length? row.meses[0] : null);
+    if(m){ 
+      DB[fam][prod].variants[m]={ tin:row.tin||0, residual:row.residual||0, gastos:row.gastos||0 };
+      if(!DB[fam][prod].meses.includes(m)) DB[fam][prod].meses.push(m);
+      DB[fam][prod].meses.sort((a,b)=>a-b);
+    }
+  }
+  // Populate selects
   const famSel=$('#familySel');
-  famSel.innerHTML='<option value="">—</option>'+Object.keys(INDEX.byFamily).sort().map(f=>`<option>${f}</option>`).join('');
-  famSel.disabled=false;
+  famSel.innerHTML='<option value="">—</option>'+Object.keys(DB).sort().map(f=>`<option>${f}</option>`).join('');
+  famSel.disabled=true; famSel.disabled=false;
   $('#productSel').innerHTML='<option value="">—</option>'; $('#productSel').disabled=true;
   $('#monthsSel').innerHTML='<option value="">—</option>'; $('#monthsSel').disabled=true;
   $('#basePrice').disabled=true; $('#offerPrice').disabled=true;
-  selected={family:null, product:null, item:null, months:null}; showStats(null);
+  showStats(null);
 }
 
 function parseDataFromCSV(text){
@@ -192,12 +155,15 @@ function parseDataFromCSV(text){
   const data=[];
   for(let i=1;i<rows.length;i++){
     const obj={}; rows[i].forEach((cell, idx)=>{ const key=header[idx]; if(!key) return; obj[key]=cell; });
-    obj.familia=obj.familia||'General'; obj.producto=obj.producto||'';
-    obj.residual=toNumber(obj.residual); obj.tin=toNumber(obj.tin); obj.gastos=toNumber(obj.gastos); obj.meses=parseMonths(obj.meses);
+    obj.familia=obj.familia||'General';
+    obj.producto=obj.producto||'';
+    obj.tin=toNumber(obj.tin);
+    obj.residual=toNumber(obj.residual);
+    obj.gastos=toNumber(obj.gastos);
+    obj.meses=parseMonths(obj.meses);
     if(obj.producto) data.push(obj);
   }
-  if(!data.length) throw new Error('No hay filas válidas (Producto obligatorio)');
-  DATA=data; buildIndex();
+  buildDB(data);
 }
 
 $('#csvInput').addEventListener('change', async (e)=>{
@@ -206,120 +172,91 @@ $('#csvInput').addEventListener('change', async (e)=>{
 });
 
 $('#clearBtn').addEventListener('click', ()=>{
-  DATA=[]; INDEX={byFamily:{}}; $('#fileName').textContent='';
-  ['#familySel','#productSel','#monthsSel'].forEach(sel=>{ $(sel).innerHTML='<option value="">—</option>'; $(sel).disabled=true; });
-  $('#basePrice').value=''; $('#offerPrice').value=''; $('#basePrice').disabled=true; $('#offerPrice').disabled=true;
-  showStats(null);
+  DB={}; selected={fam:null, prod:null, months:null}; $('#fileName').textContent='';
+  ['#familySel','#productSel','#monthsSel'].forEach(s=>{ $(s).innerHTML='<option value="">—</option>'; $(s).disabled=true; });
+  $('#basePrice').value=''; $('#offerPrice').value=''; $('#basePrice').disabled=true; $('#offerPrice').disabled=true; showStats(null);
 });
 
-$('#familySel').addEventListener('change',(e)=>{
-  selected.family=e.target.value||null;
-  const list=selected.family?(INDEX.byFamily[selected.family]||[]):[];
+$('#familySel').addEventListener('change', (e)=>{
+  selected.fam=e.target.value||null;
   const prodSel=$('#productSel');
-  prodSel.innerHTML='<option value="">—</option>'+list.map(r=>`<option>${r.producto}</option>`).join('');
-  prodSel.disabled=!list.length;
+  const famDB=selected.fam?DB[selected.fam]:null;
+  prodSel.innerHTML='<option value="">—</option>'+ (famDB?Object.keys(famDB).sort().map(p=>`<option>${p}</option>`).join(''):'')
+  prodSel.disabled=!famDB;
   $('#monthsSel').innerHTML='<option value="">—</option>'; $('#monthsSel').disabled=true;
   $('#basePrice').disabled=true; $('#offerPrice').disabled=true;
   showStats(null);
 });
 
-$('#productSel').addEventListener('change',(e)=>{
-  selected.product=e.target.value||null;
-  const list=selected.family?(INDEX.byFamily[selected.family]||[]):[];
-  selected.item=list.find(r=>r.producto===selected.product)||null;
-  const item=selected.item; if(!item){ showStats(null); return; }
-
+$('#productSel').addEventListener('change', (e)=>{
+  selected.prod=e.target.value||null; selected.months=null;
+  const famDB=selected.fam?DB[selected.fam]:null;
+  const prodDB=famDB?famDB[selected.prod]:null;
   const monthsSel=$('#monthsSel');
-  if(item.meses && item.meses.length){
-    monthsSel.innerHTML='<option value="">—</option>'+item.meses.map(m=>`<option value="${m}">${m}</option>`).join('');
-    monthsSel.disabled=false;
-    if(item.meses.length===1){ monthsSel.value=String(item.meses[0]); selected.months=item.meses[0]; }
-    else { selected.months=null; }
-  } else {
-    monthsSel.innerHTML='<option value="24">24</option><option value="36">36</option>'; monthsSel.disabled=false;
-  }
-  $('#basePrice').disabled=false; $('#offerPrice').disabled=false;
-  showStats(item); calculate();
+  monthsSel.innerHTML='<option value="">—</option>'+ (prodDB?prodDB.meses.map(m=>`<option value="${m}">${m}</option>`).join(''):'')
+  monthsSel.disabled=!(prodDB && prodDB.meses.length);
+  if(prodDB && prodDB.meses.length===1){ monthsSel.value=String(prodDB.meses[0]); selected.months=prodDB.meses[0]; }
+  $('#basePrice').disabled=!(prodDB); $('#offerPrice').disabled=!(prodDB);
+  showStats(null); calculate();
 });
 
 $('#monthsSel').addEventListener('change',(e)=>{ const v=parseInt(e.target.value,10); selected.months=isNaN(v)?null:v; calculate(); });
-['#basePrice','#offerPrice'].forEach(sel=>$(sel).addEventListener('input', calculate));
+['#basePrice','#offerPrice'].forEach(s=>$(s).addEventListener('input', calculate));
 
-function showStats(item){
-  const pre=$('#preStats'); if(!item){ pre.style.display='none'; return; }
+function showStats(_){
+  const pre=$('#preStats');
+  const famDB=selected.fam?DB[selected.fam]:null;
+  const prodDB=famDB?famDB[selected.prod]:null;
+  const varDB=(prodDB && selected.months)?prodDB.variants[selected.months]:null;
+  if(!varDB){ pre.style.display='none'; return; }
   pre.style.display='grid';
-  $('#gastosVal').textContent=nfEUR.format(item.gastos||0);
-  $('#tinVal').textContent=new Intl.NumberFormat('es-ES',{style:'percent',minimumFractionDigits:2,maximumFractionDigits:2}).format((item.tin||0)/100);
+  $('#gastosVal').textContent=nfEUR.format(varDB.gastos||0);
+  $('#tinVal').textContent=nfPCT.format((varDB.tin||0)/100);
   $('#plazosVal').textContent=selected.months?String(selected.months):'—';
-  const i=(item.tin||0)/100/12; const tae=Math.pow(1+i,12)-1; $('#taeVal').textContent=new Intl.NumberFormat('es-ES',{style:'percent',minimumFractionDigits:2,maximumFractionDigits:2}).format(tae);
+  const i=(varDB.tin||0)/100/12; const tae=Math.pow(1+i,12)-1;
+  $('#taeVal').textContent=nfPCT.format(tae);
 }
 
-
 function calculate(){
-  const item = selected.item; if(!item) return;
-  const base = parseFloat($('#basePrice').value.replace(',','.'));
-  const offer = parseFloat($('#offerPrice').value.replace(',','.'));
-  const N = selected.months || 0;
-  const i = (item.tin||0)/100/12;
-  const gastos = item.gastos || 0;
+  const famDB=selected.fam?DB[selected.fam]:null;
+  const prodDB=famDB?famDB[selected.prod]:null;
+  const varDB=(prodDB && selected.months)?prodDB.variants[selected.months]:null;
+  if(!varDB) return;
+  const base=parseFloat($('#basePrice').value.replace(',','.'));
+  const offer=parseFloat($('#offerPrice').value.replace(',','.'));
+  const N=selected.months||0;
+  const i=(varDB.tin||0)/100/12;
+  const gastos=varDB.gastos||0;
 
-  if (!base || !offer || !N || i < 0){
+  if(!base || !offer || !N || i<0){
     $('#cuotaMensual').textContent='—';
-    ['#ultimaCuota','#intereses','#costeTotal','#importeCredito','#adeudado','#precioPlazos'].forEach(sel=>$(sel).textContent='—');
+    ['#ultimaCuota','#intereses','#costeTotal','#importeCredito','#adeudado','#precioPlazos'].forEach(s=>$(s).textContent='—');
     $('#plazosVal').textContent=N?String(N):'—';
-    $('#residualVal').textContent=base? nfEUR.format(base*(item.residual||0)/100) : '—';
+    $('#residualVal').textContent=base? nfEUR.format(base*(varDB.residual||0)/100) : '—';
     return;
   }
 
-  // Valor Residual (última cuota): porcentaje del precio base, redondeado a céntimo antes del cálculo
-  let RV = base * (item.residual||0)/100;
-  RV = Math.round(RV * 100) / 100;
-
-  // Fórmula de préstamo con pago final (balloon): cuota sobre PV=Oferta con FV=RV
+  let RV = base * (varDB.residual||0)/100;
+  RV = Math.round(RV*100)/100; // redondeo previo
   const denom = (1 - Math.pow(1+i, -N));
-  const cuota = denom === 0 ? ((offer - RV) / N) : ((offer - RV/Math.pow(1+i,N)) * i) / denom;
+  const cuota = denom===0 ? ((offer - RV)/N) : ((offer - RV/Math.pow(1+i,N)) * i) / denom;
 
-  const totalPagos = cuota * N + RV + (gastos||0);
-  const intereses = totalPagos - offer;
+  const total = cuota*N + RV + (gastos||0);
+  const intereses = total - offer;
 
-  $('#residualVal').textContent = nfEUR.format(RV);
-  $('#cuotaMensual').textContent = nfEUR.format(cuota);
-  $('#ultimaCuota').textContent = nfEUR.format(RV);
-  $('#intereses').textContent = nfEUR.format(intereses);
-  $('#costeTotal').textContent = nfEUR.format(intereses);
-  $('#importeCredito').textContent = nfEUR.format(offer);
-  $('#adeudado').textContent = nfEUR.format(totalPagos);
-  $('#precioPlazos').textContent = nfEUR.format(totalPagos);
-  $('#plazosVal').textContent = String(N);
+  $('#residualVal').textContent=nfEUR.format(RV);
+  $('#cuotaMensual').textContent=nfEUR.format(cuota);
+  $('#ultimaCuota').textContent=nfEUR.format(RV);
+  $('#intereses').textContent=nfEUR.format(intereses);
+  $('#costeTotal').textContent=nfEUR.format(intereses);
+  $('#importeCredito').textContent=nfEUR.format(offer);
+  $('#adeudado').textContent=nfEUR.format(total);
+  $('#precioPlazos').textContent=nfEUR.format(total);
+  $('#plazosVal').textContent=String(N);
 }
 
-
-  // Valor Residual (última cuota): porcentaje del precio base
-  const RV = base * (item.residual||0)/100;
-
-  // Nuevo criterio: restar RV de Oferta y calcular las cuotas sobre ese principal
-  const principal = Math.max(offer - RV, 0);
-  const denom = (1 - Math.pow(1+i, -N));
-  const cuota = denom === 0 ? (principal / N) : (principal * i) / denom;
-
-  const totalPagos = cuota * N + RV + (gastos||0);
-  const intereses = totalPagos - offer;
-
-  $('#residualVal').textContent = nfEUR.format(RV);
-  $('#cuotaMensual').textContent = nfEUR.format(cuota);
-  $('#ultimaCuota').textContent = nfEUR.format(RV);
-  $('#intereses').textContent = nfEUR.format(intereses);
-  $('#costeTotal').textContent = nfEUR.format(intereses);
-  $('#importeCredito').textContent = nfEUR.format(offer);
-  $('#adeudado').textContent = nfEUR.format(totalPagos);
-  $('#precioPlazos').textContent = nfEUR.format(totalPagos);
-  $('#plazosVal').textContent = String(N);
-}
-
-// PWA
-if ('serviceWorker' in navigator){
-  window.addEventListener('load', ()=>{ navigator.serviceWorker.register('./sw.js').catch(()=>{}); });
-}
+// PWA SW
+if('serviceWorker' in navigator){ window.addEventListener('load', ()=>{ navigator.serviceWorker.register('./sw.js').catch(()=>{}); }); }
 </script>
 </body>
 </html>
