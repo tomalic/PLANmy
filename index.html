@@ -1,35 +1,298 @@
 <!DOCTYPE html>
-<html lang="es"><head><meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-<title>PLANmy · Simulador</title><link rel="manifest" href="manifest.webmanifest"><link rel="icon" href="assets/icon-192.png" sizes="192x192"><meta name="theme-color" content="#16a34a">
-<style>:root{--bg:#f7f7f7;--card:#ffffff;--text:#111827;--muted:#6b7280;--outline:#111827;--radius:22px}*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font-family:ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Cantarell,Noto Sans,Arial;display:flex;min-height:100svh;align-items:center;justify-content:center;padding:16px}.card{width:min(96vw,620px);background:var(--card);border:3px solid var(--outline);border-radius:var(--radius);box-shadow:0 10px 24px rgba(0,0,0,.08);padding:8px 14px 16px 14px;position:relative}header{margin:0 0 6px 0}header img.logo{width:100%;height:auto;display:block;object-fit:contain}.filebar{display:flex;gap:10px;justify-content:center;margin-top:8px;margin-bottom:12px}.filebar .hidden-input{display:none}.btn{border:3px solid var(--outline);background:#fff;padding:8px 12px;border-radius:14px;font-weight:700;font-size:16px;cursor:pointer}.file-name{font-size:13px;color:var(--muted);align-self:center;max-width:50%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.summary{margin:-2px 0 6px;color:var(--muted);font-size:13px;text-align:center}.row{display:grid;grid-template-columns:1fr 1.3fr;gap:14px;align-items:center;margin:12px 0}label{font-size:20px;font-weight:600}.control{display:flex;align-items:center;background:#fff;border:3px solid var(--outline);border-radius:14px;padding:8px 12px;height:46px;position:relative}select,input[type=number],input[type=text]{width:100%;height:100%;border:none;outline:none;font-size:18px;background:transparent;-webkit-appearance:none;appearance:none}.select-wrap::after{content:"▾";position:absolute;right:12px;font-size:22px;pointer-events:none}.grid-stats{display:grid;grid-template-columns:1fr 1fr;gap:8px 16px;font-size:15px;margin:10px 0}.grid-stats .key{color:var(--muted)}.grid-stats .val{text-align:right;font-weight:700}.cuota{text-align:center;margin:8px 0 6px}.cuota .big{font-size:30px;font-weight:800;color:#dc2626}.hint{font-size:12px;color:var(--muted);text-align:center}footer{text-align:center;font-size:12px;color:var(--muted);margin-top:4px}</style></head>
-<body><main class="card"><header><img class="logo" src="assets/logo.png" alt="PLANmy"/></header>
-<div class="filebar"><label class="btn" for="csvInput">Cargar datos (CSV)</label><input id="csvInput" class="hidden-input" type="file" accept=".csv,text/csv" />
-<button id="clearBtn" class="btn" type="button">Borrar datos</button><span id="fileName" class="file-name" aria-live="polite"></span></div>
-<p class="summary">CSV: <b>Familia/Tipo</b>, <b>Producto</b>, <b>Meses</b>, <b>ResidualPct</b>, <b>TIN</b> y opcional <b>Gastos</b>.</p>
-<div class="row"><label for="familySel">Familia</label><div class="control select-wrap"><select id="familySel" disabled><option value="">—</option></select></div></div>
-<div class="row"><label for="productSel">Producto</label><div class="control select-wrap"><select id="productSel" disabled><option value="">—</option></select></div></div>
-<div class="row"><label for="basePrice">Precio</label><div class="control"><input id="basePrice" type="number" inputmode="decimal" step="0.01" placeholder="Base para residual" disabled/></div></div>
-<div class="row"><label for="offerPrice">Oferta</label><div class="control"><input id="offerPrice" type="number" inputmode="decimal" step="0.01" placeholder="Base para cuotas" disabled/></div></div>
-<div class="row"><label for="monthsSel">Meses</label><div class="control select-wrap"><select id="monthsSel" disabled><option value="">—</option></select></div></div>
-<div class="grid-stats muted" id="preStats" style="display:none"><div class="key">Gastos</div><div class="val" id="gastosVal">0,00 €</div><div class="key">Valor Residual</div><div class="val" id="residualVal">—</div><div class="key">TIN</div><div class="val" id="tinVal">—</div><div class="key">Plazos</div><div class="val" id="plazosVal">—</div><div class="key">TAE</div><div class="val" id="taeVal">—</div></div>
-<div class="cuota"><div>Cuota Mensual</div><div class="big" id="cuotaMensual">—</div></div>
-<div class="grid-stats"><div class="key">Última Cuota</div><div class="val" id="ultimaCuota">—</div><div class="key">Intereses</div><div class="val" id="intereses">—</div><div class="key">Coste Total del Crédito</div><div class="val" id="costeTotal">—</div><div class="key">Importe Total de Crédito</div><div class="val" id="importeCredito">—</div><div class="key">Importe Total Adeudado</div><div class="val" id="adeudado">—</div><div class="key">Precio Total a Plazos</div><div class="val" id="precioPlazos">—</div></div>
-<div class="hint">Si no ves cambios, recarga sin caché (Cmd/Ctrl+Shift+R).</div><footer>© PLANmy</footer></main>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>PLANmy · Simulador</title>
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="assets/icon-192.png" sizes="192x192">
+  <meta name="theme-color" content="#16a34a">
+  <style>
+    :root{ --bg:#f7f7f7; --card:#ffffff; --text:#111827; --muted:#6b7280; --outline:#111827; --radius:22px; }
+    *{box-sizing:border-box}
+    body{ margin:0; background:var(--bg); color:var(--text); font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, Arial;
+          display:flex; min-height:100svh; align-items:center; justify-content:center; padding:14px;}
+    .card{ width:min(96vw, 620px); background:var(--card); border:3px solid var(--outline); border-radius:var(--radius);
+           box-shadow:0 10px 24px rgba(0,0,0,.08); padding:0 16px 14px 16px; position:relative; }
+    header{ margin:0; }
+    header .logo-wrap{ width:100%; overflow:hidden; border-top-left-radius:var(--radius); border-top-right-radius:var(--radius); }
+    header img.logo{ width:100%; display:block; margin:0; }
+    .filebar{ display:flex; gap:10px; justify-content:center; margin-top:8px; margin-bottom:12px;}
+    .filebar .hidden-input{ display:none }
+    .btn{ border:3px solid var(--outline); background:#fff; padding:8px 12px; border-radius:14px; font-weight:700; font-size:16px; cursor:pointer }
+    .file-name{ font-size:13px; color:var(--muted); align-self:center; max-width:50%; overflow:hidden; text-overflow:ellipsis; white-space:nowrap }
+    .summary{ margin:-2px 0 6px; color:var(--muted); font-size:13px; text-align:center }
+    .row{ display:grid; grid-template-columns: 1fr 1.3fr; gap:14px; align-items:center; margin:12px 0; }
+    label{ font-size:20px; font-weight:600 }
+    .control{ display:flex; align-items:center; background:#fff; border:3px solid var(--outline); border-radius:14px; padding:8px 12px; height:46px; position:relative;}
+    select, input[type="number"], input[type="text"]{ width:100%; height:100%; border:none; outline:none; font-size:18px; background:transparent; -webkit-appearance:none; appearance:none; }
+    .select-wrap::after{ content:"▾"; position:absolute; right:12px; font-size:22px; pointer-events:none; }
+    .grid-stats{ display:grid; grid-template-columns: 1fr 1fr; gap:8px 16px; font-size:15px; margin:10px 0; }
+    .grid-stats .key{ color:var(--muted) } .grid-stats .val{ text-align:right; font-weight:700 }
+    .cuota{ text-align:center; margin:8px 0 6px } .cuota .big{ font-size:30px; font-weight:800; color:#dc2626 }
+    .hint{ font-size:12px; color:var(--muted); text-align:center }
+    footer{ text-align:center; font-size:12px; color:var(--muted); margin-top:4px }
+  </style>
+</head>
+<body>
+  <main class="card" aria-label="Simulador de financiación PLANmy">
+    <header>
+      <div class="logo-wrap">
+        <img id="brandLogo" class="logo" src="assets/logo.png" alt="PLANmy"/>
+      </div>
+    </header>
+
+    <div class="filebar">
+      <label class="btn" for="csvInput">Cargar datos (CSV)</label>
+      <input id="csvInput" class="hidden-input" type="file" accept=".csv,text/csv" />
+      <button id="clearBtn" class="btn" type="button">Borrar datos</button>
+      <span id="fileName" class="file-name" aria-live="polite"></span>
+    </div>
+    <p class="summary">CSV: <b>Familia/Tipo</b>, <b>Producto</b>, <b>Meses</b>, <b>ResidualPct</b>, <b>TIN</b> y opcional <b>Gastos</b>.</p>
+
+    <div class="row">
+      <label for="familySel">Familia</label>
+      <div class="control select-wrap"><select id="familySel" disabled><option value="">—</option></select></div>
+    </div>
+
+    <div class="row">
+      <label for="productSel">Producto</label>
+      <div class="control select-wrap"><select id="productSel" disabled><option value="">—</option></select></div>
+    </div>
+
+    <div class="row">
+      <label for="basePrice">Precio</label>
+      <div class="control"><input id="basePrice" type="number" inputmode="decimal" step="0.01" placeholder="Base para residual" disabled/></div>
+    </div>
+
+    <div class="row">
+      <label for="offerPrice">Oferta</label>
+      <div class="control"><input id="offerPrice" type="number" inputmode="decimal" step="0.01" placeholder="Base para cuotas" disabled/></div>
+    </div>
+
+    <div class="row">
+      <label for="monthsSel">Meses</label>
+      <div class="control select-wrap"><select id="monthsSel" disabled><option value="">—</option></select></div>
+    </div>
+
+    <div class="grid-stats muted" id="preStats" style="display:none">
+      <div class="key">Gastos</div>           <div class="val" id="gastosVal">0,00 €</div>
+      <div class="key">Valor Residual</div>   <div class="val" id="residualVal">—</div>
+      <div class="key">TIN</div>              <div class="val" id="tinVal">—</div>
+      <div class="key">Plazos</div>           <div class="val" id="plazosVal">—</div>
+      <div class="key">TAE</div>              <div class="val" id="taeVal">—</div>
+    </div>
+
+    <div class="cuota"><div>Cuota Mensual</div><div class="big" id="cuotaMensual">—</div></div>
+
+    <div class="grid-stats">
+      <div class="key">Última Cuota</div>           <div class="val" id="ultimaCuota">—</div>
+      <div class="key">Intereses</div>              <div class="val" id="intereses">—</div>
+      <div class="key">Coste Total del Crédito</div><div class="val" id="costeTotal">—</div>
+      <div class="key">Importe Total de Crédito</div><div class="val" id="importeCredito">—</div>
+      <div class="key">Importe Total Adeudado</div> <div class="val" id="adeudado">—</div>
+      <div class="key">Precio Total a Plazos</div>  <div class="val" id="precioPlazos">—</div>
+    </div>
+
+    <div class="hint">Si no ves cambios, recarga sin caché (Cmd/Ctrl+Shift+R).</div>
+    <footer>© PLANmy</footer>
+  </main>
+
 <script>
-const $=s=>document.querySelector(s);const nfEUR=new Intl.NumberFormat('es-ES',{style:'currency',currency:'EUR'});const nfPCT=new Intl.NumberFormat('es-ES',{style:'percent',minimumFractionDigits:2,maximumFractionDigits:2});
-function normalizeKey(k){return (k||'').toString().toLowerCase().replace(/^\uFEFF/,'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9%]/g,'').trim()}
-function detectDelimiter(first){const counts={',':(first.match(/,/g)||[]).length,';':(first.match(/;/g)||[]).length,'\t':(first.match(/\t/g)||[]).length};let best=';';let mx=-1;for(const[d,c]of Object.entries(counts)){if(c>mx){mx=c;best=d==='\t'?'\t':d}}return best==='\t'?'\t':best}
-function parseCSV(t){t=t.replace(/\r\n/g,'\n').replace(/\r/g,'\n');const d=detectDelimiter(t.split('\n')[0]||';');const rows=[];let i=0,f='',r=[],q=false;while(i<t.length){const c=t[i];if(q){if(c=='"'){if(t[i+1]=='"'){f+='"';i++}else{q=false}}else{f+=c}}else{if(c=='"'){q=true}else if(c==d){r.push(f);f=''}else if(c=='\n'){r.push(f);rows.push(r.map(v=>v.trim()));r=[];f=''}else{f+=c}}i++}if(f.length||r.length){r.push(f);rows.push(r.map(v=>v.trim()))}return rows.filter(R=>R.join('').length)}
-function toNumber(v){if(typeof v==='number')return v;if(v==null)return 0;let s=(''+v).replace(/%/g,'').replace(/\s/g,'');if(s.includes(',')&&s.includes('.')){if(s.lastIndexOf(',')>s.lastIndexOf('.'))s=s.replace(/\./g,'').replace(',','.');else s=s.replace(/,/g,'')}else if(s.includes(','))s=s.replace(/\./g,'').replace(',','.');const n=parseFloat(s);return isNaN(n)?0:n}
-function parseMonths(v){const n=parseInt((''+(v??'')).trim(),10);return isNaN(n)?[]:[n]}
-let DB={},selected={fam:null,prod:null,months:null};
-const MAP={'familia':'familia','tipo':'familia','producto':'producto','modelo':'producto','meses':'meses','plazos':'meses','residualpct':'residual','residual%':'residual','residual':'residual','tin':'tin','tin%':'tin','interes':'tin','interes%':'tin','gastos':'gastos','comisiones':'gastos'};
-function buildDB(data){DB={};for(const r of data){const fam=r.familia||'General',prod=r.producto||'';if(!prod)continue;DB[fam]||(DB[fam]={});DB[fam][prod]||(DB[fam][prod]={meses:[],variants:{}});const m=(r.meses&&r.meses.length)?r.meses[0]:null;if(m){DB[fam][prod].variants[m]={tin:r.tin||0,residual:r.residual||0,gastos:r.gastos||0};if(!DB[fam][prod].meses.includes(m))DB[fam][prod].meses.push(m)}}for(const f of Object.keys(DB)){for(const p of Object.keys(DB[f]))DB[f][p].meses.sort((a,b)=>a-b)}const famSel=$('#familySel');const fams=Object.keys(DB).sort();famSel.innerHTML='<option value="">—</option>'+fams.map(f=>`<option>${f}</option>`).join('');famSel.disabled=fams.length===0}
-function parseDataFromCSV(text){const rows=parseCSV(text);if(!rows.length){alert('CSV vacío');return}const header=rows[0].map(h=>MAP[normalizeKey(h)]||normalizeKey(h));const data=[];for(let i=1;i<rows.length;i++){const obj={};rows[i].forEach((cell,idx)=>{const k=header[idx];if(!k)return;obj[k]=cell});obj.familia=obj.familia||'General';obj.producto=obj.producto||'';obj.tin=toNumber(obj.tin);obj.residual=toNumber(obj.residual);obj.gastos=toNumber(obj.gastos);obj.meses=parseMonths(obj.meses);if(obj.producto)data.push(obj)}buildDB(data)}
-document.getElementById('csvInput').addEventListener('change',async e=>{const f=e.target.files[0];if(!f)return;document.getElementById('fileName').textContent=f.name;const text=await f.text();parseDataFromCSV(text)});
-document.getElementById('clearBtn').addEventListener('click',()=>{DB={};selected={fam:null,prod:null,months:null};document.getElementById('fileName').textContent='';['#familySel','#productSel','#monthsSel'].forEach(s=>{$(s).innerHTML='<option value="">—</option>';$(s).disabled=true});document.getElementById('basePrice').value='';document.getElementById('offerPrice').value='';document.getElementById('basePrice').disabled=true;document.getElementById('offerPrice').disabled=true;['#cuotaMensual','#ultimaCuota','#intereses','#costeTotal','#importeCredito','#adeudado','#precioPlazos','#residualVal'].forEach(s=>$(s).textContent='—')});
-document.getElementById('familySel').addEventListener('change',e=>{selected.fam=e.target.value||null;const famDB=selected.fam?DB[selected.fam]:null;const prodSel=$('#productSel');prodSel.innerHTML='<option value="">—</option>'+ (famDB?Object.keys(famDB).sort().map(p=>`<option>${p}</option>`).join(''):'');prodSel.disabled=!(famDB&&Object.keys(famDB).length);$('#monthsSel').innerHTML='<option value="">—</option>';$('#monthsSel').disabled=true;document.getElementById('basePrice').disabled=true;document.getElementById('offerPrice').disabled=true});
-document.getElementById('productSel').addEventListener('change',e=>{selected.prod=e.target.value||null;selected.months=null;const famDB=selected.fam?DB[selected.fam]:null;const prodDB=famDB?famDB[selected.prod]:null;const monthsSel=$('#monthsSel');monthsSel.innerHTML='<option value="">—</option>'+ (prodDB?prodDB.meses.map(m=>`<option value="${m}">${m}</option>`).join(''):'');monthsSel.disabled=!(prodDB&&prodDB.meses.length);if(prodDB&&prodDB.meses.length===1){monthsSel.value=String(prodDB.meses[0]);selected.months=prodDB.meses[0]}document.getElementById('basePrice').disabled=!!prodDB;document.getElementById('offerPrice').disabled=!!prodDB;showStats();calculate()});
-document.getElementById('monthsSel').addEventListener('change',e=>{const v=parseInt(e.target.value,10);selected.months=isNaN(v)?null:v;showStats();calculate()});['#basePrice','#offerPrice'].forEach(s=>$(s).addEventListener('input',calculate));
-function showStats(){const pre=$('#preStats');const famDB=selected.fam?DB[selected.fam]:null;const prodDB=famDB?famDB[selected.prod]:null;const varDB=(prodDB&&selected.months)?prodDB.variants[selected.months]:null;if(!varDB){pre.style.display='none';return}pre.style.display='grid';document.getElementById('gastosVal').textContent=nfEUR.format(varDB.gastos||0);document.getElementById('tinVal').textContent=nfPCT.format((varDB.tin||0)/100);const i=(varDB.tin||0)/100/12;const tae=Math.pow(1+i,12)-1;document.getElementById('taeVal').textContent=nfPCT.format(tae);document.getElementById('plazosVal').textContent=String(selected.months||'')}
-function calculate(){const famDB=selected.fam?DB[selected.fam]:null;const prodDB=famDB?famDB[selected.prod]:null;const varDB=(prodDB&&selected.months)?prodDB.variants[selected.months]:null;if(!varDB)return;const base=parseFloat((document.getElementById('basePrice').value||'').replace(',','.'));const offer=parseFloat((document.getElementById('offerPrice').value||'').replace(',','.'));const N=selected.months||0;const i=(varDB.tin||0)/100/12;const gastos=varDB.gastos||0;if(!base||!offer||!N||i<0){['#cuotaMensual','#ultimaCuota','#intereses','#costeTotal','#importeCredito','#adeudado','#precioPlazos'].forEach(s=>$(s).textContent='—');document.getElementById('residualVal').textContent=base?nfEUR.format(base*(varDB.residual||0)/100):'—';return}let RV=base*(varDB.residual||0)/100;RV=Math.round(RV*100)/100;const denom=(1-Math.pow(1+i,-N));const cuota=denom===0?((offer-RV)/N):((offer-RV/Math.pow(1+i,N))*i)/denom;const total=cuota*N+RV+(gastos||0);const intereses=total-offer;document.getElementById('residualVal').textContent=nfEUR.format(RV);document.getElementById('cuotaMensual').textContent=nfEUR.format(cuota);document.getElementById('ultimaCuota').textContent=nfEUR.format(RV);document.getElementById('intereses').textContent=nfEUR.format(intereses);document.getElementById('costeTotal').textContent=nfEUR.format(intereses);document.getElementById('importeCredito').textContent=nfEUR.format(offer);document.getElementById('adeudado').textContent=nfEUR.format(total);document.getElementById('precioPlazos').textContent=nfEUR.format(total)}</script></body></html>
+// --- Trim white top/bottom around logo automatically ---
+(function(){
+  const img = document.getElementById('brandLogo');
+  const trim = () => {
+    const c = document.createElement('canvas');
+    const ctx = c.getContext('2d');
+    c.width = img.naturalWidth; c.height = img.naturalHeight;
+    ctx.drawImage(img,0,0);
+    try{
+      const data = ctx.getImageData(0,0,c.width,c.height).data;
+      const isWhite = (r,g,b,a) => a<10 || (r>245 && g>245 && b>245);
+      let top=0,bottom=c.height-1;
+      // find first non-white row from top
+      outerTop: for(let y=0;y<c.height;y++){
+        for(let x=0;x<c.width;x++){
+          const i=(y*c.width + x)*4;
+          if(!isWhite(data[i],data[i+1],data[i+2],data[i+3])){ top=y; break outerTop; }
+        }
+      }
+      // from bottom
+      outerBottom: for(let y=c.height-1;y>=0;y--){
+        for(let x=0;x<c.width;x++){
+          const i=(y*c.width + x)*4;
+          if(!isWhite(data[i],data[i+1],data[i+2],data[i+3])){ bottom=y; break outerBottom; }
+        }
+      }
+      const h = Math.max(1, bottom-top+1);
+      const cc = document.createElement('canvas'); cc.width=c.width; cc.height=h;
+      cc.getContext('2d').drawImage(c,0,top,c.width,h,0,0,c.width,h);
+      img.src = cc.toDataURL('image/png');
+    }catch(e){/* ignore if tainted */}
+  };
+  if (img.complete) trim(); else img.onload = trim;
+})();
+
+const $ = s=>document.querySelector(s);
+const nfEUR = new Intl.NumberFormat('es-ES',{style:'currency',currency:'EUR'});
+const nfPCT = new Intl.NumberFormat('es-ES',{style:'percent',minimumFractionDigits:2,maximumFractionDigits:2});
+
+function normalizeKey(k){ return (k||'').toString().toLowerCase().replace(/^\uFEFF/,'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9%]/g,'').trim(); }
+function detectDelimiter(first){ const counts={',':(first.match(/,/g)||[]).length,';':(first.match(/;/g)||[]).length,'\\t':(first.match(/\\t/g)||[]).length}; let best=';'; let mx=-1; for(const[d,c] of Object.entries(counts)){ if(c>mx){ mx=c; best=d==='\\t'?'\\t':d; } } return best==='\\t'?'\\t':best; }
+function parseCSV(text){
+  text=text.replace(/\\r\\n/g,'\\n').replace(/\\r/g,'\\n'); const delim=detectDelimiter(text.split('\\n')[0]||';');
+  const rows=[]; let i=0,f='',r=[],q=false;
+  while(i<text.length){ const c=text[i];
+    if(q){ if(c=='\"'){ if(text[i+1]=='\"'){f+='\"'; i++;} else { q=false; } } else { f+=c; } }
+    else{ if(c=='\"'){ q=true; } else if(c==delim){ r.push(f); f=''; } else if(c=='\\n'){ r.push(f); rows.push(r.map(v=>v.trim())); r=[]; f=''; } else { f+=c; } }
+    i++;
+  }
+  if(f.length||r.length){ r.push(f); rows.push(r.map(v=>v.trim())); }
+  return rows.filter(R=>R.join('').length);
+}
+function toNumber(v){
+  if (typeof v === 'number') return v; if (v==null) return 0;
+  let s=(''+v).replace(/%/g,'').replace(/\\s/g,'');
+  if (s.includes(',') && s.includes('.')){ if (s.lastIndexOf(',')>s.lastIndexOf('.')) s=s.replace(/\\./g,'').replace(',','.'); else s=s.replace(/,/g,''); }
+  else if (s.includes(',')) s=s.replace(/\\./g,'').replace(',','.');
+  const n=parseFloat(s); return isNaN(n)?0:n;
+}
+function parseMonths(v){ const n=parseInt((''+(v??'')).trim(),10); return isNaN(n)?[]:[n]; }
+
+let DB={}, selected={fam:null, prod:null, months:null};
+
+const HEADER_MAP={
+  'familia':'familia','tipo':'familia',
+  'producto':'producto','modelo':'producto',
+  'meses':'meses','plazos':'meses',
+  'residualpct':'residual','residual%':'residual','residual':'residual',
+  'tin':'tin','tin%':'tin','interes':'tin','interes%':'tin',
+  'gastos':'gastos','comisiones':'gastos'
+};
+
+function buildDB(data){
+  DB={};
+  for(const r of data){
+    const fam=r.familia||'General', prod=r.producto||'';
+    if(!prod) continue;
+    DB[fam] ||= {};
+    DB[fam][prod] ||= { meses:[], variants:{} };
+    const m=(r.meses && r.meses.length)? r.meses[0] : null;
+    if(m!==null){
+      DB[fam][prod].variants[m] = { tin:r.tin||0, residual:r.residual||0, gastos:r.gastos||0 };
+      if(!DB[fam][prod].meses.includes(m)) DB[fam][prod].meses.push(m);
+    }
+  }
+  for(const f of Object.keys(DB)){ for(const p of Object.keys(DB[f])) DB[f][p].meses.sort((a,b)=>a-b); }
+  const famSel=$('#familySel'); const fams=Object.keys(DB).sort();
+  famSel.innerHTML='<option value=\"\">—</option>'+fams.map(f=>`<option>${f}</option>`).join('');
+  famSel.disabled = fams.length===0;
+  $('#productSel').innerHTML='<option value=\"\">—</option>'; $('#productSel').disabled=true;
+  $('#monthsSel').innerHTML='<option value=\"\">—</option>'; $('#monthsSel').disabled=true;
+  $('#basePrice').disabled=true; $('#offerPrice').disabled=true;
+  if(!fams.length) alert('No se han detectado productos en el CSV. Revisa encabezados: Tipo/Familia, Producto, Meses, ResidualPct, TIN.');
+}
+
+function parseDataFromCSV(text){
+  const rows=parseCSV(text); if(!rows.length){ alert('CSV vacío'); return; }
+  const header=rows[0].map(h=>HEADER_MAP[normalizeKey(h)] || normalizeKey(h));
+  const data=[];
+  for(let i=1;i<rows.length;i++){
+    const obj={}; rows[i].forEach((cell, idx)=>{ const key=header[idx]; if(!key) return; obj[key]=cell; });
+    obj.familia=obj.familia||'General';
+    obj.producto=obj.producto||'';
+    obj.tin=toNumber(obj.tin);
+    obj.residual=toNumber(obj.residual);
+    obj.gastos=toNumber(obj.gastos);
+    obj.meses=parseMonths(obj.meses);
+    if(obj.producto) data.push(obj);
+  }
+  buildDB(data);
+}
+
+document.getElementById('csvInput').addEventListener('change', async (e)=>{
+  const file=e.target.files[0]; if(!file) return; document.getElementById('fileName').textContent=file.name;
+  const text=await file.text(); parseDataFromCSV(text);
+});
+
+document.getElementById('clearBtn').addEventListener('click', ()=>{
+  DB={}; selected={fam:null, prod:null, months:null}; document.getElementById('fileName').textContent='';
+  ['#familySel','#productSel','#monthsSel'].forEach(s=>{ $(s).innerHTML='<option value=\"\">—</option>'; $(s).disabled=true; });
+  document.getElementById('basePrice').value=''; document.getElementById('offerPrice').value='';
+  document.getElementById('basePrice').disabled=true; document.getElementById('offerPrice').disabled=true;
+  ['#cuotaMensual','#ultimaCuota','#intereses','#costeTotal','#importeCredito','#adeudado','#precioPlazos','#residualVal'].forEach(s=>$(s).textContent='—');
+});
+
+document.getElementById('familySel').addEventListener('change',(e)=>{
+  selected.fam = e.target.value||null;
+  const famDB = selected.fam ? DB[selected.fam] : null;
+  const prodSel=$('#productSel');
+  prodSel.innerHTML='<option value=\"\">—</option>'+ (famDB?Object.keys(famDB).sort().map(p=>`<option>${p}</option>`).join(''):'')
+  prodSel.disabled = !(famDB && Object.keys(famDB).length);
+  $('#monthsSel').innerHTML='<option value=\"\">—</option>'; $('#monthsSel').disabled=true;
+  $('#basePrice').disabled=true; $('#offerPrice').disabled=true;
+});
+
+document.getElementById('productSel').addEventListener('change',(e)=>{
+  selected.prod=e.target.value||null; selected.months=null;
+  const famDB=selected.fam?DB[selected.fam]:null;
+  const prodDB=famDB?famDB[selected.prod]:null;
+  const monthsSel=$('#monthsSel');
+  monthsSel.innerHTML='<option value=\"\">—</option>'+ (prodDB?prodDB.meses.map(m=>`<option value=\"${m}\">${m}</option>`).join(''):'')
+  monthsSel.disabled=!(prodDB && prodDB.meses.length);
+  if(prodDB && prodDB.meses.length===1){ monthsSel.value=String(prodDB.meses[0]); selected.months=prodDB.meses[0]; }
+  // Enable inputs (FIX)
+  document.getElementById('basePrice').disabled = !(prodDB);
+  document.getElementById('offerPrice').disabled = !(prodDB);
+  showStats(); calculate();
+});
+
+document.getElementById('monthsSel').addEventListener('change',(e)=>{ const v=parseInt(e.target.value,10); selected.months=isNaN(v)?null:v; showStats(); calculate(); });
+['#basePrice','#offerPrice'].forEach(s=>$(s).addEventListener('input', calculate));
+
+function showStats(){
+  const pre=$('#preStats');
+  const famDB=selected.fam?DB[selected.fam]:null;
+  const prodDB=famDB?famDB[selected.prod]:null;
+  const varDB=(prodDB && selected.months)?prodDB.variants[selected.months]:null;
+  if(!varDB){ pre.style.display='none'; return; }
+  pre.style.display='grid';
+  document.getElementById('gastosVal').textContent=nfEUR.format(varDB.gastos||0);
+  document.getElementById('tinVal').textContent=nfPCT.format((varDB.tin||0)/100);
+  const i=(varDB.tin||0)/100/12; const tae=Math.pow(1+i,12)-1;
+  document.getElementById('taeVal').textContent=nfPCT.format(tae);
+  document.getElementById('plazosVal').textContent = selected.months?String(selected.months):'—';
+}
+
+function calculate(){
+  const famDB=selected.fam?DB[selected.fam]:null;
+  const prodDB=famDB?famDB[selected.prod]:null;
+  const varDB=(prodDB && selected.months)?prodDB.variants[selected.months]:null;
+  if(!varDB) return;
+  const base=parseFloat((document.getElementById('basePrice').value||'').replace(',','.'));
+  const offer=parseFloat((document.getElementById('offerPrice').value||'').replace(',','.'));
+  const N=selected.months||0; const i=(varDB.tin||0)/100/12; const gastos=varDB.gastos||0;
+  if(!base || !offer || !N || i<0){
+    ['#cuotaMensual','#ultimaCuota','#intereses','#costeTotal','#importeCredito','#adeudado','#precioPlazos'].forEach(s=>$(s).textContent='—');
+    document.getElementById('residualVal').textContent=base? nfEUR.format(base*(varDB.residual||0)/100) : '—'; return;
+  }
+  let RV = base * (varDB.residual||0)/100; RV = Math.round(RV*100)/100;
+  const denom = (1 - Math.pow(1+i, -N));
+  const cuota = denom===0 ? ((offer - RV)/N) : ((offer - RV/Math.pow(1+i,N)) * i) / denom;
+  const total = cuota*N + RV + (gastos||0); const intereses = total - offer;
+  document.getElementById('residualVal').textContent=nfEUR.format(RV);
+  document.getElementById('cuotaMensual').textContent=nfEUR.format(cuota);
+  document.getElementById('ultimaCuota').textContent=nfEUR.format(RV);
+  document.getElementById('intereses').textContent=nfEUR.format(intereses);
+  document.getElementById('costeTotal').textContent=nfEUR.format(intereses);
+  document.getElementById('importeCredito').textContent=nfEUR.format(offer);
+  document.getElementById('adeudado').textContent=nfEUR.format(total);
+  document.getElementById('precioPlazos').textContent=nfEUR.format(total);
+}
+
+// PWA
+if('serviceWorker' in navigator){ window.addEventListener('load', ()=>{ navigator.serviceWorker.register('./sw.js').catch(()=>{}); }); }
+</script>
+</body>
+</html>
