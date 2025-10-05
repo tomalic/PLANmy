@@ -12,16 +12,17 @@
     *{box-sizing:border-box}
     body{ margin:0; background:var(--bg); color:var(--text); font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, Arial;
           display:flex; min-height:100svh; align-items:center; justify-content:center; padding:14px;}
-    .card{ width:min(96vw, 620px); background:var(--card); border:3px solid var(--outline); border-radius:var(--radius);
-           box-shadow:0 10px 24px rgba(0,0,0,.08); padding:0 16px 14px 16px; position:relative; }
+    .card{ width:min(96vw, 640px); background:var(--card); border:3px solid var(--outline); border-radius:var(--radius);
+           box-shadow:0 10px 24px rgba(0,0,0,.08); padding:0 16px 16px 16px; position:relative; }
     header{ margin:0; padding-top:8px; }
     header .logo-wrap{ width:100%; overflow:hidden; border-top-left-radius:var(--radius); border-top-right-radius:var(--radius); }
     header img.logo{ width:100%; display:block; margin:0; }
-    .filebar{ display:flex; gap:10px; justify-content:center; margin-top:8px; margin-bottom:12px;}
+    .filebar{ display:flex; gap:10px; justify-content:center; margin-top:8px; margin-bottom:10px;}
     .filebar .hidden-input{ display:none }
     .btn{ border:3px solid var(--outline); background:#fff; padding:8px 12px; border-radius:14px; font-weight:700; font-size:16px; cursor:pointer }
     .file-name{ font-size:13px; color:var(--muted); align-self:center; max-width:50%; overflow:hidden; text-overflow:ellipsis; white-space:nowrap }
-    .summary{ margin:-2px 0 6px; color:var(--muted); font-size:13px; text-align:center }
+    .summary{ margin:-2px 0 4px; color:var(--muted); font-size:13px; text-align:center }
+    #debug{ display:none; margin:6px 0 4px; padding:8px; border:2px dashed #9ca3af; border-radius:10px; font-size:12px; color:#374151; background:#f3f4f6;}
     .row{ display:grid; grid-template-columns: 1fr 1.3fr; gap:14px; align-items:center; margin:12px 0; }
     label{ font-size:20px; font-weight:600 }
     .control{ display:flex; align-items:center; background:#fff; border:3px solid var(--outline); border-radius:14px; padding:8px 12px; height:46px; position:relative;}
@@ -32,7 +33,6 @@
     .cuota{ text-align:center; margin:8px 0 6px } .cuota .big{ font-size:30px; font-weight:800; color:#dc2626 }
     .hint{ font-size:12px; color:var(--muted); text-align:center }
     footer{ text-align:center; font-size:12px; color:var(--muted); margin-top:4px }
-    .warn{ font-size:12px; color:#9a3412; text-align:center; margin-top:4px; }
   </style>
 </head>
 <body>
@@ -50,7 +50,7 @@
       <span id="fileName" class="file-name" aria-live="polite"></span>
     </div>
     <p class="summary">CSV: <b>Familia/Tipo</b>, <b>Producto</b>, <b>Meses</b> (24/36), <b>ResidualPct</b>, <b>TIN</b> y opcional <b>Gastos</b>.</p>
-    <p id="debugMsg" class="warn" style="display:none"></p>
+    <div id="debug"></div>
 
     <div class="row">
       <label for="familySel">Familia</label>
@@ -96,12 +96,12 @@
       <div class="key">Precio Total a Plazos</div>  <div class="val" id="precioPlazos">—</div>
     </div>
 
-    <div class="hint">Si no ves cambios, recarga sin caché (Cmd/Ctrl+Shift+R).</div>
+    <div class="hint">Sin caché ni PWA para depurar; luego volvemos a activarlo.</div>
     <footer>© PLANmy</footer>
   </main>
 
 <script>
-// Recorte automático de blanco arriba/abajo en el logo y margen superior pequeño
+// Recortar blanco del logo y dejar margen superior
 (function(){
   const img = document.getElementById('brandLogo');
   const trim = () => {
@@ -147,11 +147,7 @@ function toNumber(v){
   else if (s.includes(',')) s=s.replace(/\./g,'').replace(',','.');
   const n=parseFloat(s); return isNaN(n)?0:n;
 }
-function parseMonths(v){
-  const s=(''+(v??'')).toLowerCase();
-  const m = parseInt(s.match(/\d+/)?.[0] || '', 10);
-  if (isNaN(m)) return []; return [m];
-}
+function parseMonths(v){ const m=parseInt((''+(v??'')).toLowerCase().match(/\d+/)?.[0]||'',10); return isNaN(m)?[]:[m]; }
 
 let DB={}, selected={fam:null, prod:null, months:null};
 
@@ -164,22 +160,23 @@ const HEADER_MAP={
   'gastos':'gastos','comisiones':'gastos'
 };
 
-function buildDB(data){
+function buildDB(data, headerRaw){
   DB={};
-  let rowsUsed=0;
+  let productos=0,familiasSet=new Set(), mesesCount=0;
   for(const r of data){
     const fam=r.familia||'General', prod=r.producto||'';
     if(!prod) continue;
-    DB[fam] ||= {}; DB[fam][prod] ||= { meses:[], variants:{} };
-    let months = (r.meses && r.meses.length)? r.meses : [];
-    if (!months.length) months = [24,36]; // **fallback** si no viene Meses
-    for (const m of months){
+    if(!DB[fam]) DB[fam]={};
+    if(!DB[fam][prod]) DB[fam][prod]={ meses:[], variants:{} };
+    let months = (r.meses && r.meses.length)? r.meses : [24,36];
+    for(const m of months){
       DB[fam][prod].variants[m] = { tin:r.tin||0, residual:r.residual||0, gastos:r.gastos||0 };
       if(!DB[fam][prod].meses.includes(m)) DB[fam][prod].meses.push(m);
-      rowsUsed++;
+      mesesCount++;
     }
+    DB[fam][prod].meses.sort((a,b)=>a-b);
+    productos++; familiasSet.add(fam);
   }
-  for(const f of Object.keys(DB)){ for(const p of Object.keys(DB[f])) DB[f][p].meses.sort((a,b)=>a-b); }
   const fams=Object.keys(DB).sort();
   const famSel=$('#familySel');
   famSel.innerHTML='<option value="">—</option>'+fams.map(f=>`<option>${f}</option>`).join('');
@@ -189,27 +186,32 @@ function buildDB(data){
   $('#monthsSel').innerHTML='<option value="">—</option>'; $('#monthsSel').disabled=true;
   $('#basePrice').disabled=true; $('#offerPrice').disabled=true;
 
-  // Mensaje de depuración si no se detecta nada
-  const dbg=document.getElementById('debugMsg');
-  if(!fams.length){ dbg.style.display='block'; dbg.textContent = 'No se detectaron productos. Comprueba encabezados: Tipo/Familia, Producto, Meses, ResidualPct, TIN.'; }
-  else { dbg.style.display='none'; }
+  // Debug info visible
+  const dbg = document.getElementById('debug');
+  dbg.style.display='block';
+  dbg.innerHTML = `<b>Encabezados leídos:</b> ${headerRaw.join(' | ')}<br>
+                   <b>Normalizados:</b> ${Object.keys(data[0]||{}).join(' | ')}<br>
+                   <b>Familias:</b> ${fams.length} &nbsp; <b>Productos:</b> ${productos} &nbsp; <b>Variantes (meses):</b> ${mesesCount}`;
 }
 
 function parseDataFromCSV(text){
   const rows=parseCSV(text); if(!rows.length){ alert('CSV vacío'); return; }
+  const headerRaw = rows[0];
   const header=rows[0].map(h=>HEADER_MAP[normalizeKey(h)] || normalizeKey(h));
   const data=[];
   for(let i=1;i<rows.length;i++){
     const obj={}; rows[i].forEach((cell, idx)=>{ const key=header[idx]; if(!key) return; obj[key]=cell; });
     obj.familia=obj.familia||'General';
     obj.producto=obj.producto||'';
-    obj.tin=toNumber(obj.tin);
+    let tin=toNumber(obj.tin);
+    if (tin>0 && tin<1.5) tin = tin*100; // 0.104 => 10.4
+    obj.tin=tin;
     obj.residual=toNumber(obj.residual);
     obj.gastos=toNumber(obj.gastos);
     obj.meses=parseMonths(obj.meses);
     if(obj.producto) data.push(obj);
   }
-  buildDB(data);
+  buildDB(data, headerRaw);
 }
 
 document.getElementById('csvInput').addEventListener('change', async (e)=>{
@@ -218,12 +220,11 @@ document.getElementById('csvInput').addEventListener('change', async (e)=>{
 });
 
 document.getElementById('clearBtn').addEventListener('click', ()=>{
-  DB={}; selected={fam:null, prod:null, months:null}; document.getElementById('fileName').textContent='';
+  DB={}; selected={fam:null, prod:null, months:null}; document.getElementById('fileName').textContent=''; document.getElementById('debug').style.display='none';
   ['#familySel','#productSel','#monthsSel'].forEach(s=>{ $(s).innerHTML='<option value="">—</option>'; $(s).disabled=true; });
   document.getElementById('basePrice').value=''; document.getElementById('offerPrice').value='';
   document.getElementById('basePrice').disabled=true; document.getElementById('offerPrice').disabled=true;
   ['#cuotaMensual','#ultimaCuota','#intereses','#costeTotal','#importeCredito','#adeudado','#precioPlazos','#residualVal'].forEach(s=>$(s).textContent='—');
-  document.getElementById('debugMsg').style.display='none';
 });
 
 document.getElementById('familySel').addEventListener('change',(e)=>{
@@ -291,9 +292,6 @@ function calculate(){
   document.getElementById('adeudado').textContent=nfEUR.format(total);
   document.getElementById('precioPlazos').textContent=nfEUR.format(total);
 }
-
-// PWA
-if('serviceWorker' in navigator){ window.addEventListener('load', ()=>{ navigator.serviceWorker.register('./sw.js').catch(()=>{}); }); }
 </script>
 </body>
 </html>
