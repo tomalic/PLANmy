@@ -187,12 +187,12 @@ function buildDB(data, headerRaw){
   $('#basePrice').disabled=true; $('#offerPrice').disabled=true;
 
   // Debug info visible
-  const dbg = document.getElementById('debug');
-  dbg.style.display='block';
-  dbg.innerHTML = `<b>Encabezados leídos:</b> ${headerRaw.join(' | ')}<br>
-                   <b>Normalizados:</b> ${Object.keys(data[0]||{}).join(' | ')}<br>
-                   <b>Familias:</b> ${fams.length} &nbsp; <b>Productos:</b> ${productos} &nbsp; <b>Variantes (meses):</b> ${mesesCount}`;
-}
+ // const dbg = document.getElementById('debug');
+ // dbg.style.display='block';
+ // dbg.innerHTML = `<b>Encabezados leídos:</b> ${headerRaw.join(' | ')}<br>
+ //                  <b>Normalizados:</b> ${Object.keys(data[0]||{}).join(' | ')}<br>
+ //                  <b>Familias:</b> ${fams.length} &nbsp; <b>Productos:</b> ${productos} &nbsp; <b>Variantes (meses):</b> ${mesesCount}`;
+//}
 
 function parseDataFromCSV(text){
   const rows=parseCSV(text); if(!rows.length){ alert('CSV vacío'); return; }
