@@ -1,4 +1,4 @@
-const CACHE = 'planmy-v3';
+const CACHE = 'planmy-app-v4';
 const ASSETS = [
   './',
   './index.html',
@@ -17,19 +17,16 @@ self.addEventListener('install', (event) => {
 
 self.addEventListener('activate', (event) => {
   event.waitUntil(
-    caches.keys().then(keys =>
-      Promise.all(keys.map(k => (k === CACHE ? null : caches.delete(k)))))
+    caches.keys().then(keys => Promise.all(keys.map(k => (k === CACHE ? null : caches.delete(k)))))
   );
   self.clients.claim();
 });
 
 self.addEventListener('fetch', (event) => {
   const req = event.request;
-
-  // Only handle GET
   if (req.method !== 'GET') return;
 
-  // Always serve the app shell from cache on navigations
+  // App-shell for navigations
   if (req.mode === 'navigate') {
     event.respondWith(
       caches.match('./index.html').then(res => res || fetch('./index.html'))
@@ -39,7 +36,7 @@ self.addEventListener('fetch', (event) => {
 
   const url = new URL(req.url);
 
-  // Same-origin cache-first strategy
+  // Same-origin cache-first
   if (url.origin === location.origin) {
     event.respondWith(
       caches.match(req).then(cached => {
