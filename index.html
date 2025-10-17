@@ -22,7 +22,6 @@
     .btn{ border:3px solid var(--outline); background:#fff; padding:8px 12px; border-radius:14px; font-weight:700; font-size:16px; cursor:pointer }
     .file-name{ font-size:13px; color:var(--muted); align-self:center; max-width:50%; overflow:hidden; text-overflow:ellipsis; white-space:nowrap }
     .summary{ margin:-2px 0 4px; color:var(--muted); font-size:13px; text-align:center }
-    #debug{ display:none; margin:6px 0 4px; padding:8px; border:2px dashed #9ca3af; border-radius:10px; font-size:12px; color:#374151; background:#f3f4f6;}
     .row{ display:grid; grid-template-columns: 1fr 1.3fr; gap:14px; align-items:center; margin:12px 0; }
     label{ font-size:20px; font-weight:600 }
     .control{ display:flex; align-items:center; background:#fff; border:3px solid var(--outline); border-radius:14px; padding:8px 12px; height:46px; position:relative;}
@@ -50,7 +49,6 @@
       <span id="fileName" class="file-name" aria-live="polite"></span>
     </div>
     <p class="summary">CSV: <b>Familia/Tipo</b>, <b>Producto</b>, <b>Meses</b> (24/36), <b>ResidualPct</b>, <b>TIN</b> y opcional <b>Gastos</b>.</p>
-    <div id="debug"></div>
 
     <div class="row">
       <label for="familySel">Familia</label>
@@ -96,7 +94,7 @@
       <div class="key">Precio Total a Plazos</div>  <div class="val" id="precioPlazos">—</div>
     </div>
 
-    <div class="hint">Sin caché ni PWA para depurar; luego volvemos a activarlo.</div>
+    <div class="hint">Instala como app (PWA) desde el navegador.</div>
     <footer>© PLANmy</footer>
   </main>
 
@@ -160,9 +158,8 @@ const HEADER_MAP={
   'gastos':'gastos','comisiones':'gastos'
 };
 
-function buildDB(data, headerRaw){
+function buildDB(data){
   DB={};
-  let productos=0,familiasSet=new Set(), mesesCount=0;
   for(const r of data){
     const fam=r.familia||'General', prod=r.producto||'';
     if(!prod) continue;
@@ -172,10 +169,8 @@ function buildDB(data, headerRaw){
     for(const m of months){
       DB[fam][prod].variants[m] = { tin:r.tin||0, residual:r.residual||0, gastos:r.gastos||0 };
       if(!DB[fam][prod].meses.includes(m)) DB[fam][prod].meses.push(m);
-      mesesCount++;
     }
     DB[fam][prod].meses.sort((a,b)=>a-b);
-    productos++; familiasSet.add(fam);
   }
   const fams=Object.keys(DB).sort();
   const famSel=$('#familySel');
@@ -185,18 +180,10 @@ function buildDB(data, headerRaw){
   $('#productSel').innerHTML='<option value="">—</option>'; $('#productSel').disabled=true;
   $('#monthsSel').innerHTML='<option value="">—</option>'; $('#monthsSel').disabled=true;
   $('#basePrice').disabled=true; $('#offerPrice').disabled=true;
-
-  // Debug info visible
-  const dbg = document.getElementById('debug');
-  dbg.style.display='block';
-  dbg.innerHTML = `<b>Encabezados leídos:</b> ${headerRaw.join(' | ')}<br>
-                   <b>Normalizados:</b> ${Object.keys(data[0]||{}).join(' | ')}<br>
-                   <b>Familias:</b> ${fams.length} &nbsp; <b>Productos:</b> ${productos} &nbsp; <b>Variantes (meses):</b> ${mesesCount}`;
 }
 
 function parseDataFromCSV(text){
   const rows=parseCSV(text); if(!rows.length){ alert('CSV vacío'); return; }
-  const headerRaw = rows[0];
   const header=rows[0].map(h=>HEADER_MAP[normalizeKey(h)] || normalizeKey(h));
   const data=[];
   for(let i=1;i<rows.length;i++){
@@ -204,14 +191,16 @@ function parseDataFromCSV(text){
     obj.familia=obj.familia||'General';
     obj.producto=obj.producto||'';
     let tin=toNumber(obj.tin);
-    if (tin>0 && tin<1.5) tin = tin*100; // 0.104 => 10.4
+    if (0 < tin < 1.5) tin = tin*100; // Python-like chain won't work in JS; fix below after write
     obj.tin=tin;
     obj.residual=toNumber(obj.residual);
     obj.gastos=toNumber(obj.gastos);
     obj.meses=parseMonths(obj.meses);
     if(obj.producto) data.push(obj);
   }
-  buildDB(data, headerRaw);
+  // fix chained comparison in JS
+  data.forEach(d=>{ if(d.tin>0 && d.tin<1.5) d.tin*=100; });
+  buildDB(data);
 }
 
 document.getElementById('csvInput').addEventListener('change', async (e)=>{
@@ -220,7 +209,7 @@ document.getElementById('csvInput').addEventListener('change', async (e)=>{
 });
 
 document.getElementById('clearBtn').addEventListener('click', ()=>{
-  DB={}; selected={fam:null, prod:null, months:null}; document.getElementById('fileName').textContent=''; document.getElementById('debug').style.display='none';
+  DB={}; selected={fam:null, prod:null, months:null}; document.getElementById('fileName').textContent='';
   ['#familySel','#productSel','#monthsSel'].forEach(s=>{ $(s).innerHTML='<option value="">—</option>'; $(s).disabled=true; });
   document.getElementById('basePrice').value=''; document.getElementById('offerPrice').value='';
   document.getElementById('basePrice').disabled=true; document.getElementById('offerPrice').disabled=true;
@@ -292,6 +281,9 @@ function calculate(){
   document.getElementById('adeudado').textContent=nfEUR.format(total);
   document.getElementById('precioPlazos').textContent=nfEUR.format(total);
 }
+
+// Register PWA
+if('serviceWorker' in navigator){ window.addEventListener('load', ()=>{ navigator.serviceWorker.register('./sw.js').catch(()=>{}); }); }
 </script>
 </body>
 </html>
