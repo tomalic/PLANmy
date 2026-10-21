@@ -9,6 +9,7 @@ const CATEGORY=['iphone','watch','ipad','mac'];
 const LABEL={iphone:'iPhone',watch:'Apple Watch',ipad:'iPad',mac:'Mac'};
 let data=null,cat='iphone',months=24,current=null,toastTimer=null;
 let previousChoice=null;
+let latestResult=null;
 function toast(message,kind='') {
   const el=$('toast');el.textContent=message;el.className=`toast ${kind}`;el.hidden=false;
   clearTimeout(toastTimer);toastTimer=setTimeout(()=>el.hidden=true,7000);
@@ -78,7 +79,8 @@ function calculate() {
   let result;
   try {
     result=compute({price:Number($('price').value),fees:Number($('fees').value),residual:Number($('residual').value),tin:Number($('tin').value)/100,months});
-  }catch(e){$('monthly').textContent='—';$('lastQuota').textContent='—';$('interest').textContent='—';$('owed').textContent='—';$('tae').textContent='—';$('tinOut').textContent='—';$('currentPrice').textContent='—';$('amortRows').replaceChildren();toast(e.message,'error');return}
+  }catch(e){latestResult=null;$('monthly').textContent='—';$('lastQuota').textContent='—';$('interest').textContent='—';$('owed').textContent='—';$('tae').textContent='—';$('tinOut').textContent='—';$('currentPrice').textContent='—';$('amortRows').replaceChildren();toast(e.message,'error');return}
+  latestResult=result;
   $('monthly').textContent=euro(result.regular);
   $('lastQuota').textContent=euro(result.residual);
   $('currentPrice').textContent=euro(current.price);
@@ -129,6 +131,42 @@ async function importFile(file) {
   }catch(e){toast(`No s'ha importat l'Excel. ${e.message}`,'error')}
   finally{buttons.forEach(b=>b.disabled=false);$('excelFile').value=''}
 }
+
+const escapeHtml=value=>String(value).replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
+function summaryFields(){
+  if(!latestResult||!current)return null;
+  const r=latestResult;
+  return [
+    ['Producte',current.name],['Modalitat',`${months} quotes mensuals + residual`],
+    ['Preu del producte (Excel)',euro(current.price)],['Preu promoció',euro(r.price)],
+    ['Quota mensual',euro(r.regular)],['Darrera mensualitat ajustada',euro(r.lastMonthly)],
+    ['Quota residual',euro(r.residual)],['Interessos',euro(r.interest)],
+    ['Cost total a terminis',euro(r.owed)],['TIN anual',percentage(r.tin)],['TAE',percentage(r.tae)]
+  ];
+}
+function showSummary(){
+  const fields=summaryFields();
+  if(!fields){toast('Selecciona un producte vàlid abans de generar el resum.','warning');return;}
+  const list=$('summaryFields');list.replaceChildren();
+  for(const [label,value] of fields){
+    const div=document.createElement('div'),dt=document.createElement('dt'),dd=document.createElement('dd');
+    dt.textContent=label;dd.textContent=value;div.append(dt,dd);list.append(div);
+  }
+  $('summaryDialog').hidden=false;
+  document.body.classList.add('summary-open');
+  $('closeSummary').focus();
+}
+function closeSummary(){ $('summaryDialog').hidden=true;document.body.classList.remove('summary-open');$('printButton').focus(); }
+function saveSummary(){
+  const fields=summaryFields();if(!fields)return;
+  const rows=fields.map(([key,val])=>`<tr><th>${escapeHtml(key)}</th><td>${escapeHtml(val)}</td></tr>`).join('');
+  const page=`<!doctype html><html lang="ca"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Resum PLANmy</title><style>body{font:16px system-ui,-apple-system,sans-serif;max-width:740px;margin:40px auto;padding:0 22px;color:#192b48}h1{color:#315ce0}table{border-collapse:collapse;width:100%;margin:30px 0}th,td{padding:13px 8px;border-bottom:1px solid #dfe4ed;text-align:left}th{width:52%;color:#536078;font-weight:500}td{font-weight:700}p{font-size:12px;color:#5b6474;line-height:1.5}button{padding:12px 18px;cursor:pointer}@media print{button{display:none}body{margin:10mm auto}}</style></head><body><h1>PLANmy</h1><h2>Resum del finançament</h2><table>${rows}</table><p>Simulació informativa basada en l'Excel importat al dispositiu. Comprova les condicions abans de comunicar una oferta definitiva.</p><button onclick="window.print()">Imprimir / desar com a PDF</button></body></html>`;
+  const url=URL.createObjectURL(new Blob([page],{type:'text/html;charset=utf-8'}));
+  const link=document.createElement('a');link.href=url;link.download='PLANmy-resum.html';document.body.append(link);link.click();link.remove();
+  setTimeout(()=>URL.revokeObjectURL(url),30000);
+  toast('Resum descarregat. Pots obrir-lo i imprimir-lo o desar-lo en PDF.');
+}
+
 function theme(next) {document.documentElement.dataset.theme=next;localStorage.setItem('planmy-theme',next);$('themeButton').title=next==='dark'?'Canviar a mode clar':'Canviar a mode obscur'}
 async function init() {
   theme(localStorage.getItem('planmy-theme')||'light');
@@ -144,7 +182,12 @@ async function init() {
   $('variant').addEventListener('change',updateProduct);
   ['price','residual','fees','tin'].forEach(id=>$(id).addEventListener('input',calculate));
   $('resetValues').addEventListener('click',updateProduct);
-  $('printButton').addEventListener('click',()=>window.print());
+  $('printButton').addEventListener('click',showSummary);
+  $('closeSummary').addEventListener('click',closeSummary);
+  $('summaryDialog').addEventListener('click',e=>{if(e.target===$('summaryDialog'))closeSummary()});
+  document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!$('summaryDialog').hidden)closeSummary()});
+  $('printSummary').addEventListener('click',()=>{try{window.print()}catch(e){toast('Aquest navegador no permet imprimir. Fes servir «Desar resum».','warning')}});
+  $('saveSummary').addEventListener('click',saveSummary);
   try {
     data=await loadData();
     if(data?.plans?.length&&data.meta?.filename)startDashboard();
