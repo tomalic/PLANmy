@@ -81,14 +81,14 @@ function calculate() {
   }catch(e){$('monthly').textContent='—';$('lastQuota').textContent='—';$('interest').textContent='—';$('owed').textContent='—';$('tae').textContent='—';$('tinOut').textContent='—';$('currentPrice').textContent='—';$('amortRows').replaceChildren();toast(e.message,'error');return}
   $('monthly').textContent=euro(result.regular);
   $('lastQuota').textContent=euro(result.residual);
-  $('currentPrice').textContent=euro(result.price);
+  $('currentPrice').textContent=euro(current.price);
   $('termBadge').textContent=`${months} + 1 quotes`;
   $('regularCount').textContent=String(months);
   $('interest').textContent=euro(result.interest);
   $('owed').textContent=euro(result.owed);
   $('tinOut').textContent=percentage(result.tin);
   $('tae').textContent=percentage(result.tae);
-  const values=[['Preu del producte',result.price],['Despeses',result.fees],['Crèdit total',result.loan],['Interessos',result.interest],['Cost total del crèdit',result.creditCost],['Total a retornar',result.owed],['Penúltima quota mensual',result.lastMonthly],['Quota residual',result.residual]];
+  const values=[['Preu del producte (Excel)',current.price],['Preu promoció',result.price],['Despeses',result.fees],['Crèdit total',result.loan],['Interessos',result.interest],['Cost total del crèdit',result.creditCost],['Total a retornar',result.owed],['Penúltima quota mensual',result.lastMonthly],['Quota residual',result.residual]];
   const breakdown=$('breakdown');breakdown.replaceChildren();
   for(const [label,value] of values) {
     const div=document.createElement('div'),name=document.createElement('span'),amount=document.createElement('strong');
