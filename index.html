@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="ca">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#f6f7fb">
+<meta name="description" content="PLANmy · Simulador local de finançament. Importa el teu Excel sense enviar dades a cap servidor.">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'self'; object-src 'none'; base-uri 'self'; form-action 'none'">
+<link rel="manifest" href="./manifest.webmanifest">
+<link rel="icon" href="./icon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="./styles.css">
+<title>PLANmy · Finançament senzill</title>
+</head>
+<body>
+<div class="site-frame">
+<header class="topbar">
+  <div class="topbar-inner">
+    <div class="branding"><span class="brand-mark" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="3" width="16" height="18" rx="3"/><path d="M8 8h8M8 12h2m4 0h2M8 16h2m4 0h2"/></svg></span><div><strong>PLAN<span class="brand-accent">my</span></strong><small>Simulador de finançament</small></div></div>
+    <div class="top-actions"><span class="privacy-chip"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="10" width="14" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg> Dades locals</span><button type="button" class="icon-button" id="themeButton" aria-label="Canviar tema" title="Canviar tema"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M20.8 14.4A9 9 0 0 1 9.6 3.2a9 9 0 1 0 11.2 11.2z"/></svg></button></div>
+  </div>
+</header>
+<main class="main">
+<section id="welcome" class="welcome" hidden>
+  <div class="welcome-graphic" aria-hidden="true"><div class="graphic-halo"><svg viewBox="0 0 80 80" fill="none"><rect x="15" y="12" width="50" height="56" rx="10" fill="currentColor" opacity=".1"/><path d="M27 26h26M27 36h26M27 46h8M44 46h9M27 56h8M44 56h9" stroke="currentColor" stroke-width="4" stroke-linecap="round"/><path d="M15 18v42" stroke="currentColor" stroke-width="3" stroke-linecap="round"/></svg></div></div>
+  <span class="eyebrow">BENVINGUT A PLANmy</span>
+  <h1>El finançament,<br><span>més fàcil que mai.</span></h1>
+  <p>Carrega el teu Excel PLANmy i comença a calcular quotes amb una experiència clara, ràpida i sense complicacions.</p>
+  <button type="button" id="firstImport" class="button button-primary button-large"><svg class="svg-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 16V4m-5 5 5-5 5 5M4 16v3a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-3"/></svg> Carregar Excel PLANmy</button>
+  <div class="welcome-foot"><span>✓ Sense registre</span><span>✓ Sense enviar dades</span><span>✓ Disponible offline</span></div>
+</section>
+<section id="dashboard" hidden>
+  <div class="page-intro"><div><span class="eyebrow">CALCULADORA PLANmy</span><h1>Què vols finançar?</h1><p>Tria el producte, configura'l i consulta les quotes a l'instant.</p></div><button class="button button-ghost desktop-update" type="button" id="updateTop"><svg class="svg-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 16V4m-5 5 5-5 5 5M4 16v3a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-3"/></svg> Actualitzar Excel</button></div>
+  <div class="workspace">
+    <div class="config-column">
+      <section class="card product-card" aria-labelledby="chooseHeading"><div class="card-heading"><span class="step-num">01</span><div><h2 id="chooseHeading">El teu producte</h2><p>Quina categoria vols finançar?</p></div></div>
+        <div class="category-grid" id="categoryGrid" role="group" aria-label="Categoria del producte">
+          <button type="button" class="category" data-cat="iphone"><span class="cat-symbol"><svg viewBox="0 0 48 48" fill="none"><rect x="13" y="3.5" width="22" height="41" rx="6" stroke="currentColor" stroke-width="2.5"/><path d="M20 8h8M22 40h4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></span>iPhone</button>
+          <button type="button" class="category" data-cat="watch"><span class="cat-symbol"><svg viewBox="0 0 48 48" fill="none"><rect x="13" y="12" width="22" height="24" rx="7" stroke="currentColor" stroke-width="2.5"/><path d="M18 12l2-9h8l2 9M18 36l2 9h8l2-9M24 17v8l5 3" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/></svg></span>Watch</button>
+          <button type="button" class="category" data-cat="ipad"><span class="cat-symbol"><svg viewBox="0 0 48 48" fill="none"><rect x="9" y="5" width="30" height="38" rx="4" stroke="currentColor" stroke-width="2.5"/><circle cx="24" cy="39" r="1.5" fill="currentColor"/></svg></span>iPad</button>
+          <button type="button" class="category" data-cat="mac"><span class="cat-symbol"><svg viewBox="0 0 48 48" fill="none"><rect x="9" y="7" width="30" height="26" rx="2" stroke="currentColor" stroke-width="2.5"/><path d="M4 37h40l-3 4H7z" stroke="currentColor" stroke-width="2.5" stroke-linejoin="round"/></svg></span>Mac</button>
+        </div>
+        <div class="fields"><div class="field"><label for="model">Model</label><div class="select-wrap"><select id="model"></select></div></div><div class="field"><label for="variant">Capacitat o configuració</label><div class="select-wrap"><select id="variant"></select></div></div></div>
+      </section>
+      <section class="card terms-card" aria-labelledby="termsHeading"><div class="card-heading"><span class="step-num">02</span><div><h2 id="termsHeading">El teu finançament</h2><p>Condicions de l'oferta</p></div></div>
+        <div class="field"><label>Durada del finançament</label><div class="term-options" id="terms" role="group" aria-label="Durada"><button type="button" data-months="24">24 mesos</button><button type="button" data-months="36">36 mesos</button></div><div id="termHelp" class="field-help"></div></div>
+        <div class="price-row"><span>Preu del producte</span><strong id="currentPrice">—</strong></div>
+        <details class="advanced" id="advanced"><summary><span>Opcions avançades</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg></summary><div class="advanced-body"><p>El TIN i els imports s'importen de l'Excel. Pots ajustar-los per simular una oferta.</p><div class="number-grid"><div class="field"><label for="price">Principal (€)</label><input type="number" id="price" min="0.01" step="0.01" inputmode="decimal"></div><div class="field"><label for="residual">Valor residual (€)</label><input type="number" id="residual" min="0" step="0.01" inputmode="decimal"></div><div class="field"><label for="fees">Despeses (€)</label><input type="number" id="fees" min="0" value="0" step="0.01" inputmode="decimal"></div><div class="field"><label for="tin">TIN anual (%)</label><input type="number" id="tin" min="0" max="100" step="0.01" inputmode="decimal"></div></div><button type="button" id="resetValues" class="link-button">Restablir valors de l'Excel</button></div></details>
+      </section>
+      <section class="source-card" aria-label="Versió de dades"><div class="source-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><path d="M8 3h8l5 5v12a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h4zM15 3v6h6M7 14h10M7 18h8"/></svg></div><div class="source-text"><strong id="fileName">Excel PLANmy</strong><span id="fileMeta">Dades desades en aquest dispositiu</span></div><button type="button" id="updateBottom" class="source-update">Canviar</button></section>
+    </div>
+    <div class="results-column"><section class="result-card" aria-labelledby="resultHeading"><div class="print-title"><strong>PLANmy · Resum del finançament</strong><span id="printProduct"></span></div><div class="result-top"><span class="result-label">LA TEVA QUOTA MENSUAL</span><span class="result-chip" id="termBadge">— mesos</span></div><div class="hero-number"><span id="monthly">—</span><span class="per-month">/mes</span></div><p class="result-desc">Quota estimada durant <strong id="regularCount">—</strong> mesos. La darrera quota mensual pot variar lleugerament per ajustar el saldo.</p><div class="result-separator"></div><div class="highlight-detail"><div><span>Darrera quota residual</span><small>Al final del finançament, addicional a les mensualitats</small></div><strong id="lastQuota">—</strong></div><div class="result-separator"></div><div class="result-stats"><div><span>Interessos</span><strong id="interest">—</strong></div><div><span>Cost total a terminis</span><strong id="owed">—</strong></div><div><span>TIN anual</span><strong id="tinOut">—</strong></div><div><span>TAE</span><strong id="tae">—</strong></div></div><button type="button" id="printButton" class="button button-primary button-block"><svg class="svg-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 8V3h10v5M7 17h10v4H7zM6 17H4a2 2 0 0 1-2-2v-4a3 3 0 0 1 3-3h14a3 3 0 0 1 3 3v4a2 2 0 0 1-2 2h-2M18 12h1"/></svg> Imprimir / desar resum</button></section>
+      <section class="card details-card"><details id="amortDetails"><summary><div class="detail-head"><span class="detail-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 5h16v14H4zM4 10h16M9 10v9M15 10v9"/></svg></span><div><strong>Detall del finançament</strong><small>Amortització i imports totals</small></div></div><svg class="details-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg></summary><div class="details-body"><div class="breakdown" id="breakdown"></div><div class="table-scroll"><table><thead><tr><th>Mes</th><th>Principal pendent</th><th>Interessos</th><th>Amortització</th><th>Quota</th><th>Saldo restant</th></tr></thead><tbody id="amortRows"></tbody></table></div></div></details></section>
+      <div class="disclaimer"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7.5v.5"/></svg><p>Simulació informativa basada en les condicions del teu Excel. Comprova els imports amb la calculadora oficial abans de comunicar una oferta definitiva.</p></div>
+    </div>
+  </div>
+</section>
+<div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
+<input type="file" id="excelFile" accept=".xlsx,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" hidden>
+</main>
+<footer class="footer"><span>PLANmy · Les teves dades, al teu dispositiu.</span><span>Versió 1.0</span></footer>
+</div>
+<script src="./vendor/pako_inflate.min.js" defer></script><script type="module" src="./app.js"></script>
+</body>
+</html>
